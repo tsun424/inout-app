@@ -18,7 +18,7 @@ import com.tsun.inout.service.ActivityBean;
  *	update time			editor				updated information
  */
 
-public class EditActivity extends AppCompatActivity {
+public class BrowseActivity extends AppCompatActivity {
 
     TextView actDurationTv;
 
