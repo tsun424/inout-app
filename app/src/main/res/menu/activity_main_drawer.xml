@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/menu_group1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_list_act"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/my_activity" />
+        <item
+            android:id="@+id/nav_new_act"
+            android:icon="@drawable/ic_menu_save"
+            android:title="@string/new_activity" />
+    </group>
+
+    <group android:id="@+id/menu_group2"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_exit"
+            android:icon="@drawable/ic_menu_end_conversation"
+            android:title="Exit" />
+    </group>
+
+</menu>
