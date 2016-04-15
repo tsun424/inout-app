@@ -37,8 +37,6 @@ public class ActivityAdapter extends BaseAdapter {
         this.actList.add(activityBean);
     }
 
-
-
     @Override
     public int getCount() {
         return actList.size();
@@ -73,5 +71,13 @@ public class ActivityAdapter extends BaseAdapter {
         actDescription.setText(data.getType());
 
         return ll;
+    }
+
+    public void removeItem(int position){
+        actList.remove(position);
+    }
+
+    public void emptyAdapter(){
+        this.actList = new ArrayList<ActivityBean>();
     }
 }

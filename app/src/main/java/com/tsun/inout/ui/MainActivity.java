@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onActivitySelected(ActivityBean activityBean) {
-        Intent intent = new Intent(getBaseContext(), EditActivity.class);
+        Intent intent = new Intent(getBaseContext(), BrowseActivity.class);
         intent.putExtra("activityBean", activityBean);
         startActivity(intent);
     }

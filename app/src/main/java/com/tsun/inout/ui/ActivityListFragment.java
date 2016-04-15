@@ -1,6 +1,5 @@
 package com.tsun.inout.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -46,14 +44,13 @@ import org.json.JSONObject;
 public class ActivityListFragment extends Fragment {
     private ListView actLv;
     private RequestQueue queue;
-    private JsonArrayRequest jsArrayRequest;
     private ActivityAdapter adapter;
     private ProgressDialog ringProgressDialog;
     private SwipeRefreshLayout swipeRefresh;
-
+    private JsonArrayRequest jsArrayRequest;
     private OnActivityListSelectedListener mCallback;
 
-    public static final String TAG = "jsObjRequest";
+    public static final String TAG = "jsRequest";
     public static final int HTTP_TIMEOUT_MS = 10000;
 
     public ActivityListFragment() {
@@ -135,10 +132,13 @@ public class ActivityListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.check_in:
                 // do check in
+                doCheckIn(activityBean.getId(), info.position);
                 return true;
             case R.id.edit:
                 return true;
             case R.id.delete:
+                // delete the activity
+                doDelete(activityBean.getId(), info.position);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -160,7 +160,7 @@ public class ActivityListFragment extends Fragment {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        handleError();
+                        handleError("Getting data error...");
                     }
                 });
         jsArrayRequest.setTag(TAG);
@@ -172,8 +172,103 @@ public class ActivityListFragment extends Fragment {
         queue.add(jsArrayRequest);
     }
 
-    private void doCheckIn(int activityId){
+    private void doCheckIn(String activityId, final int position){
 
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/checkIn/"+activityId;
+
+        doJsonObjectRequest
+                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int result = response.getInt("result");
+                            if(result == 1){
+                                adapter.removeItem(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                            dismissEffect();
+                            Toast.makeText(getContext(),
+                                    "Check in successfully.", Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError(error.toString());
+                    }
+                }, 1);
+
+    }
+
+    private void doDelete(String activityId, final int position){
+
+
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityId;
+
+        doJsonObjectRequest
+                (Request.Method.DELETE, apiUrl, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int result = response.getInt("result");
+                            if(result == 1){
+                                adapter.removeItem(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                            dismissEffect();
+                            Toast.makeText(getContext(),
+                                    "Delete the activity successfully.", Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError(error.toString());
+                    }
+                }, 2);
+    }
+
+
+    /**
+     * encapsulate JsonObjectRequest into this method
+     *
+     * @param method refer to Request.Method.GET, Request.Method.POST...
+     * @param url URL of http request
+     * @param response successful callback method
+     * @param errorListener error callback method
+     * @param action 1: do check in, 2: do delete
+     *
+     * @return void
+     */
+    private void doJsonObjectRequest( int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> response, Response.ErrorListener errorListener, int action){
+
+        String dialogMsg = "";
+
+        switch(action){
+            case 1:
+                dialogMsg = "Checking in ...";
+            case 2:
+                dialogMsg = "Deleting ...";
+        }
+        ringProgressDialog = ProgressDialog.show(getActivity(), "Please wait ...", dialogMsg, true);
+        ringProgressDialog.setCancelable(false);
+
+        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(method, url, jsonRequest, response, errorListener);
+        jsObjectRequest.setTag(TAG);
+        jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                HTTP_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // Add the request to the RequestQueue.
+        queue.add(jsObjectRequest);
     }
 
     private void renderList(JSONArray response){
@@ -191,7 +286,6 @@ public class ActivityListFragment extends Fragment {
                 String endTime = activity.getString("end_time");
                 String type = activity.getString("type");
                 String id = activity.getString("id");
-                System.out.println("id=======>"+id);
                 // JSONObject phone = activity.getJSONObject("phone");
                 ActivityBean activityBean = new ActivityBean();
                 activityBean.setId(id);
@@ -201,12 +295,7 @@ public class ActivityListFragment extends Fragment {
                 adapter.add(activityBean);
                 adapter.notifyDataSetChanged();
             }
-            if(ringProgressDialog.isShowing()){
-                ringProgressDialog.dismiss();
-            }
-            if(swipeRefresh.isRefreshing()){
-                swipeRefresh.setRefreshing(false);
-            }
+            dismissEffect();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -215,17 +304,23 @@ public class ActivityListFragment extends Fragment {
         }
     }
 
-    private void handleError(){
+    private void handleError(String errInfo){
+        if(errInfo == null || errInfo.equals("")){
+            errInfo = "Something wrong...";
+        }
+        dismissEffect();
+        Toast.makeText(getContext(),
+                errInfo, Toast.LENGTH_LONG).show();
+    }
+
+    private void dismissEffect(){
         if(ringProgressDialog.isShowing()){
             ringProgressDialog.dismiss();
         }
         if(swipeRefresh.isRefreshing()){
             swipeRefresh.setRefreshing(false);
         }
-        Toast.makeText(getContext(),
-                "Getting data error! ", Toast.LENGTH_LONG).show();
     }
-
 
     public interface OnActivityListSelectedListener{
         public void onActivitySelected(ActivityBean activityBean);
