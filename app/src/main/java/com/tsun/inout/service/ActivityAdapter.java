@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tsun.inout.R;
+import com.tsun.inout.model.ActivityBean;
 
 import java.util.ArrayList;
 import java.util.List;

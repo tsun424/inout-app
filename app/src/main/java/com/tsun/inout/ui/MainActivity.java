@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.tsun.inout.R;
-import com.tsun.inout.service.ActivityBean;
+import com.tsun.inout.model.ActivityBean;
 
 /**
  *	Main Activity
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         // getMenuInflater().inflate(R.menu.main, menu);
-         return true;
+        return true;
     }
 
     @Override
@@ -113,12 +113,8 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.commit();
 
         } else if (id == R.id.nav_new_act) {
-            NewActivityFragment fragment = new NewActivityFragment();
-            android.support.v4.app.FragmentTransaction fragmentTransaction =
-                    getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
-            fragmentTransaction.commit();
-
+            Intent intent = new Intent(getBaseContext(), NewActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_exit) {
 
         }
@@ -135,7 +131,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onActivitySelected(ActivityBean activityBean) {
-        Intent intent = new Intent(getBaseContext(), BrowseActivity.class);
+        Intent intent = new Intent(getBaseContext(), BrowseActivityPager.class);
         intent.putExtra("activityBean", activityBean);
         startActivity(intent);
     }

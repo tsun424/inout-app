@@ -9,6 +9,22 @@
     <string name="check_in">Check In</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="save">Save</string>
+
+    <string name="type">Type: </string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="working_alone">Is Working Alone</string>
+    <string name="unknown_end_time">Unknown End Time</string>
+    <string name="contact">Contact</string>
+    <string name="notify_selected">Notify Contact who has been selected</string>
+    <string name="repeat_frequency">Repeat Every</string>
+    <string name="repeat_start_date">Repeat Start Date</string>
+    <string name="repeat_end_date">Repeat End Date</string>
+    <string name="groups">Groups</string>
+    <string name="comments">Comments</string>
+    <string name="pls_start_time">Please choose start time</string>
+    <string name="pls_end_time">Please choose end time</string>
 
     <string name="action_settings">Settings</string>
 </resources>

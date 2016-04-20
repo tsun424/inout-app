@@ -9,10 +9,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tsun.inout.R;
-import com.tsun.inout.service.ActivityBean;
+import com.tsun.inout.model.ActivityBean;
 
 /**
  *	Main Activity

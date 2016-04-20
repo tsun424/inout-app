@@ -26,7 +26,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.tsun.inout.R;
 import com.tsun.inout.service.ActivityAdapter;
-import com.tsun.inout.service.ActivityBean;
+import com.tsun.inout.model.ActivityBean;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -255,8 +255,10 @@ public class ActivityListFragment extends Fragment {
         switch(action){
             case 1:
                 dialogMsg = "Checking in ...";
+                break;
             case 2:
                 dialogMsg = "Deleting ...";
+                break;
         }
         ringProgressDialog = ProgressDialog.show(getActivity(), "Please wait ...", dialogMsg, true);
         ringProgressDialog.setCancelable(false);
