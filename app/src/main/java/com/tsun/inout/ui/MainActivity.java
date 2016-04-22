@@ -27,7 +27,11 @@ import com.tsun.inout.model.ActivityBean;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityListFragment.OnActivityListSelectedListener {
 
-    private long lastClickTime = 0;;
+    private long lastClickTime = 0;
+
+    static final int PICK_NEW_RESULT = 1;
+
+    private ActivityListFragment activityListFragment;
 
 
     @Override
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        // getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -89,12 +93,14 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        // int id = item.getItemId();
+        int id = item.getItemId();
 
         // noinspection SimplifiableIfStatement
-        // if (id == R.id.action_settings) {
-        //     return true;
-        // }
+        if (id == R.id.menu_activity_new) {
+            Intent intent = new Intent(getBaseContext(), NewActivity.class);
+            startActivityForResult(intent, PICK_NEW_RESULT);
+            return true;
+        }
 
          return super.onOptionsItemSelected(item);
     }
@@ -106,15 +112,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_list_act) {
-            ActivityListFragment fragment = new ActivityListFragment();
+            activityListFragment = new ActivityListFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
                     getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.replace(R.id.fragment_container, activityListFragment);
             fragmentTransaction.commit();
 
         } else if (id == R.id.nav_new_act) {
             Intent intent = new Intent(getBaseContext(), NewActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, PICK_NEW_RESULT);
         } else if (id == R.id.nav_exit) {
 
         }
@@ -127,6 +133,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_NEW_RESULT){
+            if(resultCode == RESULT_OK){
+                activityListFragment = new ActivityListFragment();
+                android.support.v4.app.FragmentTransaction fragmentTransaction =
+                        getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, activityListFragment).commit();
+            }
+        }
+
     }
 
     @Override

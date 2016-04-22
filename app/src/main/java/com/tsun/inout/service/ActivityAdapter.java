@@ -69,7 +69,7 @@ public class ActivityAdapter extends BaseAdapter {
 
         String actTime = data.getStartTime()+" to "+data.getEndTime();
         actTimeTv.setText(actTime);
-        actDescription.setText(data.getType());
+        actDescription.setText(data.getActivityType());
 
         return ll;
     }

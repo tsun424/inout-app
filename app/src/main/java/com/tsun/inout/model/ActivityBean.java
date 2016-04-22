@@ -3,6 +3,9 @@ package com.tsun.inout.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  *	record all information of activity
  ************************************************************************
@@ -14,26 +17,33 @@ import android.os.Parcelable;
 
 public class ActivityBean implements Parcelable{
 
+    private String startDate;
+    private String endDate;
     private String startTime;
     private String endTime;
-    private String description;
+    private String comments;
     private String status;
-    private String duration;
-    private String type;
+    private String activityTypeId;
     private String id;
+    private int isRepeat;
+    private String repeatId;
     private String repeatUnit;
+    private String repeatStartDate;
+    private String repeatEndDate;
+    private int repeatFrequency;
     private int isWorkingAlone;
+    private String contact;
+    private String activityType;
+    private String createdBy;
+    private String updatedBy;
+    private String createdAt;
+    private String updatedAt;
+    private String userName;
+    private String groupName;
+    private String userId;
 
     public ActivityBean(){
 
-    }
-    public ActivityBean(String id, String startTime, String endTime, String description, String status, String duration){
-        this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
-        this.status = status;
-        this.duration = duration;
     }
 
     @Override
@@ -46,9 +56,19 @@ public class ActivityBean implements Parcelable{
         dest.writeString(this.id);
         dest.writeString(this.startTime);
         dest.writeString(this.endTime);
-        dest.writeString(this.description);
+        dest.writeString(this.comments);
         dest.writeString(this.status);
-        dest.writeString(this.duration);
+        dest.writeString(this.activityTypeId);
+        dest.writeString(this.contact);
+        dest.writeInt(this.isWorkingAlone);
+        dest.writeInt(this.isRepeat);
+        dest.writeString(this.repeatUnit);
+        dest.writeInt(this.repeatFrequency);
+        dest.writeString(this.repeatStartDate);
+        dest.writeString(this.repeatEndDate);
+        dest.writeString(this.repeatId);
+        dest.writeString(this.groupName);
+        dest.writeString(this.activityType);
     }
 
     public static final Parcelable.Creator<ActivityBean> CREATOR
@@ -65,9 +85,19 @@ public class ActivityBean implements Parcelable{
         this.id = in.readString();
         this.startTime = in.readString();
         this.endTime = in.readString();
-        this.description = in.readString();
+        this.comments = in.readString();
         this.status = in.readString();
-        this.duration = in.readString();
+        this.activityTypeId = in.readString();
+        this.contact = in.readString();
+        this.isWorkingAlone = in.readInt();
+        this.isRepeat = in.readInt();
+        this.repeatUnit = in.readString();
+        this.repeatFrequency = in.readInt();
+        this.repeatStartDate = in.readString();
+        this.repeatEndDate = in.readString();
+        this.repeatId = in.readString();
+        this.groupName = in.readString();
+        this.activityType = in.readString();
     }
 
 
@@ -80,20 +110,16 @@ public class ActivityBean implements Parcelable{
         return endTime;
     }
 
-    public String getDescription() {
-        return description;
+    public String getComments() {
+        return comments;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public String getDuration() {
-        return duration;
-    }
-
-    public String getType() {
-        return type;
+    public String getActivityTypeId() {
+        return activityTypeId;
     }
 
     public void setStartTime(String startTime) {
@@ -104,20 +130,16 @@ public class ActivityBean implements Parcelable{
         this.endTime = endTime;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setActivityTypeId(String type) {
+        this.activityTypeId = type;
     }
 
     public String getId() {
@@ -142,5 +164,161 @@ public class ActivityBean implements Parcelable{
 
     public void setIsWorkingAlone(int isWorkingAlone) {
         this.isWorkingAlone = isWorkingAlone;
+    }
+
+    public void setRepeatStartDate(String repeatStartDate) {
+        this.repeatStartDate = repeatStartDate;
+    }
+
+    public void setRepeatEndDate(String repeatEndDate) {
+        this.repeatEndDate = repeatEndDate;
+    }
+
+    public String getRepeatStartDate() {
+        return repeatStartDate;
+    }
+
+    public String getRepeatEndDate() {
+        return repeatEndDate;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setRepeatFrequency(int repeatFrequency) {
+        this.repeatFrequency = repeatFrequency;
+    }
+
+    public int getRepeatFrequency() {
+        return repeatFrequency;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endEndDate) {
+        this.endDate = endEndDate;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setActivityType(String activityType) {
+        this.activityType = activityType;
+    }
+
+    public String getActivityType() {
+        return activityType;
+    }
+
+    public void setIsRepeat(int isRepeat) {
+        this.isRepeat = isRepeat;
+    }
+
+    public void setRepeatId(String repeatId) {
+        this.repeatId = repeatId;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setName(String name) {
+        this.userName = name;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public int getIsRepeat() {
+        return isRepeat;
+    }
+
+    public String getRepeatId() {
+        return repeatId;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getName() {
+        return userName;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public JSONObject toJSONObject(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("startDate", this.getStartDate());
+            jsonObject.put("startTime", this.getStartTime());
+
+            if(!("".equals(this.getEndDate())) && this.getEndDate() != null){
+                jsonObject.put("endDate", this.getEndDate());
+                jsonObject.put("endTime", this.getEndTime());
+            }
+            jsonObject.put("activityTypeId",this.getActivityTypeId());
+            jsonObject.put("contact", this.getContact());
+            jsonObject.put("isWorkingAlone", this.getIsWorkingAlone());
+            jsonObject.put("comments", this.getComments());
+            if(this.getRepeatFrequency() != 0 && !("".equals(this.getEndDate())) && this.getEndDate() != null){
+                jsonObject.put("repeatFrequency", this.getRepeatFrequency());
+                jsonObject.put("repeatUnit", this.getRepeatUnit());
+                jsonObject.put("repeatStartDate", this.getRepeatStartDate());
+                jsonObject.put("repeatEndDate", this.getRepeatEndDate());
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 }

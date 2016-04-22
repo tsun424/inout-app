@@ -9,7 +9,7 @@
             android:title="@string/my_activity" />
         <item
             android:id="@+id/nav_new_act"
-            android:icon="@drawable/ic_menu_save"
+            android:icon="@drawable/ic_menu_add"
             android:title="@string/new_activity" />
     </group>
 

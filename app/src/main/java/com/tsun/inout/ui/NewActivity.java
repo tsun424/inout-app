@@ -10,20 +10,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.tsun.inout.R;
@@ -35,6 +35,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
 /**
  *	New activity creation fragment
  ************************************************************************
@@ -44,19 +50,28 @@ import org.json.JSONObject;
  *	update time			editor				updated information
  */
 
-public class NewActivity extends AppCompatActivity implements View.OnTouchListener{
+public class NewActivity extends AppCompatActivity implements View.OnTouchListener,
+        DateTimePickerFragment.onDateTimeSetListener,
+        DatePickerFragment.onDateSelectedListener {
 
     private RequestQueue queue;
     private ProgressDialog ringProgressDialog;
     private GestureDetectorCompat mDetector;
     private Spinner spType;
     private Spinner spRepeatUnit;
-    private ActivityBean activityBean;                  // new activity data
-    private Button btnStartTime;
-    private Button btnEndTime;
+    private TextView tv_start_time;
+    private TextView tv_end_time;
+    private TextView tv_repeat_start_time;
+    private TextView tv_repeat_end_time;
+    private EditText et_contact;
+    private EditText et_comments;
+    private EditText et_repeat_frequency;
+    private LinearLayout linear_groups;
 
-    private boolean isWorkingAloneClicked = false;
-    private boolean isUnknownClicked = false;
+    private ActivityBean activityBean;                  // new activity data
+    private ArrayList<Integer> groupsArrayList;
+    private static final String TIME_FORMAT = "HH:mm:ss";
+    private static final String DATE_FORMAT = "dd-MM-yyyy";
 
     public static final int HORIZON_MIN_DISTANCE = 30;
     public static final String TAG = "jsRequest";
@@ -81,6 +96,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         getSelectData();
 
         activityBean = new ActivityBean();
+        groupsArrayList = new ArrayList<Integer>();
 
         // get view components
         SpinnerSelected spinnerSelect = new SpinnerSelected(activityBean);
@@ -89,16 +105,19 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         spRepeatUnit = (Spinner)findViewById(R.id.sp_repeat_unit);
         spRepeatUnit.setOnItemSelectedListener(spinnerSelect);
 
-        btnStartTime = (Button)findViewById(R.id.btn_start_time);
-
-
+        tv_start_time = (TextView)findViewById(R.id.tv_start_time);
+        tv_end_time = (TextView)findViewById(R.id.tv_end_time);
+        tv_repeat_start_time = (TextView)findViewById(R.id.tv_repeat_start_time);
+        tv_repeat_end_time = (TextView)findViewById(R.id.tv_repeat_end_time);
+        et_contact = (EditText)findViewById(R.id.et_contact);
+        et_comments = (EditText)findViewById(R.id.et_comments);
+        et_repeat_frequency = (EditText)findViewById(R.id.et_repeat_frequency);
 
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
         mDetector = new GestureDetectorCompat(this,new MyGestureListener());
 
     }
-
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -143,7 +162,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
         // noinspection SimplifiableIfStatement
         if (id == R.id.menu_act_save) {
-            Toast.makeText(this, activityBean.getType()+" === "+activityBean.getRepeatUnit(), Toast.LENGTH_LONG).show();
+            save();
         }
 
         return super.onOptionsItemSelected(item);
@@ -152,6 +171,10 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     @Override
     protected void onStop() {
         super.onStop();
+        // cancel current network requests
+        if (queue != null) {
+            queue.cancelAll(TAG);
+        }
     }
 
 
@@ -169,6 +192,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                             renderSpinner(activityType, spType);
                             JSONArray repeatUnit = (JSONArray)response.getJSONArray("repeatUnit");
                             renderSpinner(repeatUnit, spRepeatUnit);
+                            addGroups();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -179,7 +203,67 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                     public void onErrorResponse(VolleyError error) {
                         handleError(error.toString());
                     }
-                }, 2);
+                });
+    }
+
+    private void addGroups(){
+        // TODO change to real userId
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
+        linear_groups = (LinearLayout)findViewById(R.id.linear_groups);
+
+        JsonArrayRequest jsArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        renderGroups(response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError("Getting data error...");
+                    }
+                });
+        jsArrayRequest.setTag(TAG);
+        jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                HTTP_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // Add the request to the RequestQueue.
+        queue.add(jsArrayRequest);
+    }
+
+    private void renderGroups(JSONArray response){
+        for(int i = 0; i < response.length(); i++){
+            try {
+                JSONObject group = (JSONObject) response.get(i);
+                int id = group.getInt("id");
+                String groupName = group.getString("group_name");
+                CheckBox chb = new CheckBox(this);
+                chb.setId(id);
+                chb.setText(groupName);
+                chb.setOnClickListener(new ChbOnClickListener());
+                linear_groups.addView(chb);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class ChbOnClickListener implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            CheckBox chb = (CheckBox)v;
+            if(chb.isChecked()){
+                groupsArrayList.add(chb.getId());
+            }else{
+                int idx = groupsArrayList.indexOf(chb.getId());
+                if(idx > -1){
+                    groupsArrayList.remove(idx);
+                }
+            }
+        }
     }
 
     /**
@@ -189,23 +273,10 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
      * @param url URL of http request
      * @param response successful callback method
      * @param errorListener error callback method
-     * @param action 1: do save
      *
      * @return void
      */
-    private void doJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> response, Response.ErrorListener errorListener, int action){
-
-        String dialogMsg = "";
-
-        switch(action){
-            case 1:
-                dialogMsg = "Saving the activity ...";
-                break;
-        }
-        if(ringProgressDialog != null && dialogMsg != ""){
-            ringProgressDialog = ProgressDialog.show(this, "Please wait ...", dialogMsg, true);
-            ringProgressDialog.setCancelable(false);
-        }
+    private void doJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> response, Response.ErrorListener errorListener){
 
         JsonObjectRequest jsObjectRequest = new JsonObjectRequest(method, url, jsonRequest, response, errorListener);
         jsObjectRequest.setTag(TAG);
@@ -262,5 +333,133 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         }
     }
 
+    public void setTime(View v){
 
+        DateToTimeFragment dateTimeFragment = new DateToTimeFragment();
+        dateTimeFragment.setView(v);
+        String tag = "";
+
+        switch (v.getId()){
+            case R.id.btn_start_time:
+                tag = "startTimePicker";
+                break;
+            case R.id.btn_end_time:
+                tag = "endTimePicker";
+                break;
+        }
+
+        dateTimeFragment.show(getSupportFragmentManager(), tag);
+    }
+
+    @Override
+    public void onDateTimeSet(View view, int year, int month, int day, int hourOfDay, int minute) {
+        GregorianCalendar calendar = new GregorianCalendar(year, month, day, hourOfDay, minute);
+        SimpleDateFormat dateSdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
+        dateSdf.setCalendar(calendar);
+        SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT, Locale.UK);
+        dateSdf.setCalendar(calendar);
+        timeSdf.setCalendar(calendar);
+        String selectedDate = dateSdf.format(calendar.getTime());
+        String selectedTime = timeSdf.format(calendar.getTime());
+        switch (view.getId()){
+            case R.id.btn_start_time:
+                activityBean.setStartDate(selectedDate);
+                activityBean.setStartTime(selectedTime);
+                tv_start_time.setText(selectedDate+" "+selectedTime);
+                break;
+            case R.id.btn_end_time:
+                activityBean.setEndDate(selectedDate);
+                activityBean.setEndTime(selectedTime);
+                tv_end_time.setText(selectedDate+" "+selectedTime);
+                break;
+        }
+    }
+
+    public void setDate(View v){
+
+        DatePickerFragment datePickerFragment = new DatePickerFragment();
+        datePickerFragment.setView(v);
+        String tag = "";
+
+        switch (v.getId()){
+            case R.id.btn_repeat_start_time:
+                tag = "repeatStartPicker";
+                break;
+            case R.id.btn_repeat_end_time:
+                tag = "repeatEndPicker";
+                break;
+        }
+
+        datePickerFragment.show(getSupportFragmentManager(), tag);
+    }
+
+    @Override
+    public void onDateSelected(View view, int year, int month, int day) {
+
+        GregorianCalendar calendar = new GregorianCalendar(year, month, day);
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
+        sdf.setCalendar(calendar);
+        String selectedDate = sdf.format(calendar.getTime());
+        switch (view.getId()){
+            case R.id.btn_repeat_start_time:
+                activityBean.setRepeatStartDate(selectedDate);
+                tv_repeat_start_time.setText(selectedDate);
+                break;
+            case R.id.btn_repeat_end_time:
+                activityBean.setRepeatEndDate(selectedDate);
+                tv_repeat_end_time.setText(selectedDate);
+                break;
+        }
+    }
+
+    public void save(){
+
+        activityBean.setContact(et_contact.getText().toString());
+        activityBean.setComments(et_comments.getText().toString());
+        if(!("".equals(et_repeat_frequency.getText().toString()))){
+            activityBean.setRepeatFrequency(Integer.parseInt(et_repeat_frequency.getText().toString()));
+        }
+
+        ringProgressDialog = ProgressDialog.show(this, "Please wait ...", "Saving data ...", true);
+        ringProgressDialog.setCancelable(false);
+        JSONObject activityJsonObject = activityBean.toJSONObject();
+        if(!groupsArrayList.isEmpty()){
+            JSONArray jsonArray = new JSONArray(groupsArrayList);
+            try {
+                activityJsonObject.put("selectedGroups",jsonArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity";
+
+        doJsonObjectRequest
+                (Request.Method.POST, apiUrl, activityJsonObject, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ringProgressDialog.dismiss();
+                        try {
+                            int result = response.getInt("result");
+                            if(result == 1){
+                                Toast.makeText(getBaseContext(), "Save activity successfully.", Toast.LENGTH_LONG).show();
+                                setResult(RESULT_OK);
+                                finish();
+                            }else{
+                                String errorMsg = response.getString("errorMsg");
+                                Toast.makeText(getBaseContext(), "Error: "+errorMsg, Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        ringProgressDialog.dismiss();
+                        handleError(error.toString());
+                    }
+                });
+    }
 }

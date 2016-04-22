@@ -24,6 +24,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/scroll_margin"
+        android:layout_marginRight="@dimen/scroll_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -37,10 +39,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="@dimen/form_label_width"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:text="@string/type"/>
                 <Spinner
                     android:id="@+id/sp_act_type"
@@ -51,6 +55,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
                 <CheckBox android:id="@+id/chb_working_alone"
                     android:layout_width="wrap_content"
@@ -61,38 +66,52 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/btn_start_time"
-                    android:layout_width="@dimen/form_label_width"
-                    android:layout_height="wrap_content"
-                    android:text="@string/start_time"/>
                 <TextView
                     android:id="@+id/tv_start_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/pls_start_time"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/hint_start_time"
                     android:layout_weight="2"/>
+                <ImageButton
+                    android:id="@+id/btn_start_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/button_min_height"
+                    android:minWidth="@dimen/button_min_width"
+                    android:src="@drawable/ic_dialog_time"
+                    android:background="@drawable/my_button"
+                    android:onClick="setTime"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/btn_end_time"
-                    android:layout_width="@dimen/form_label_width"
-                    android:layout_height="wrap_content"
-                    android:text="@string/end_time"/>
                 <TextView
                     android:id="@+id/tv_end_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/pls_end_time"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/hint_end_time"
                     android:layout_weight="2"/>
+                <ImageButton
+                    android:id="@+id/btn_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/button_margin_top"
+                    android:minHeight="@dimen/button_min_height"
+                    android:minWidth="@dimen/button_min_width"
+                    android:src="@drawable/ic_dialog_time"
+                    android:background="@drawable/my_button"
+                    android:onClick="setTime"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
                 <CheckBox android:id="@+id/chb_unknown_time"
                     android:layout_width="wrap_content"
@@ -103,11 +122,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
-                <TextView
-                    android:layout_width="@dimen/form_label_width"
-                    android:layout_height="wrap_content"
-                    android:text="@string/contact"/>
                 <EditText
                     android:id="@+id/et_contact"
                     android:layout_width="0dp"
@@ -118,6 +134,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
                 <CheckBox android:id="@+id/chb_notify_selected"
                     android:layout_width="wrap_content"
@@ -128,10 +145,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="@dimen/form_label_width"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:text="@string/repeat_frequency"/>
                 <EditText
                     android:id="@+id/et_repeat_frequency"
@@ -147,44 +166,75 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/bt_repeat_start_time"
-                    android:layout_width="@dimen/form_label_width"
-                    android:layout_height="wrap_content"
-                    android:text="@string/end_time"/>
                 <TextView
                     android:id="@+id/tv_repeat_start_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/pls_end_time"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/hint_repeat_start_time"
                     android:layout_weight="2"/>
+                <ImageButton
+                    android:id="@+id/btn_repeat_start_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/button_margin_top"
+                    android:minHeight="@dimen/button_min_height"
+                    android:minWidth="@dimen/button_min_width"
+                    android:src="@drawable/ic_dialog_time"
+                    android:background="@drawable/my_button"
+                    android:onClick="setDate"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tv_repeat_end_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/hint_repeat_end_time"
+                    android:layout_weight="2"/>
+                <ImageButton
+                    android:id="@+id/btn_repeat_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/button_margin_top"
+                    android:minHeight="@dimen/button_min_height"
+                    android:minWidth="@dimen/button_min_width"
+                    android:src="@drawable/ic_dialog_time"
+                    android:background="@drawable/my_button"
+                    android:onClick="setDate"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/bt_repart_end_time"
+                <TextView
+                    android:id="@+id/tv_groups"
                     android:layout_width="@dimen/form_label_width"
                     android:layout_height="wrap_content"
-                    android:text="@string/end_time"/>
-                <TextView
-                    android:id="@+id/tv_repeat_end_time"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/groups"/>
+                <LinearLayout
+                    android:id="@+id/linear_groups"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/pls_end_time"
-                    android:layout_weight="2"/>
+                    android:layout_weight="2"
+                    android:orientation="vertical"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <EditText
-                    android:id="@+id/et_comment"
+                    android:id="@+id/et_comments"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/pls_end_time" />
+                    android:hint="@string/comments" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -283,7 +283,6 @@ public class ActivityListFragment extends Fragment {
             for (int i = 0; i < response.length(); i++) {
 
                 JSONObject activity = (JSONObject) response.get(i);
-
                 String startTime = activity.getString("start_time");
                 String endTime = activity.getString("end_time");
                 String type = activity.getString("type");
@@ -293,7 +292,7 @@ public class ActivityListFragment extends Fragment {
                 activityBean.setId(id);
                 activityBean.setStartTime(startTime);
                 activityBean.setEndTime(endTime);
-                activityBean.setType(type);
+                activityBean.setActivityType(type);
                 adapter.add(activityBean);
                 adapter.notifyDataSetChanged();
             }
