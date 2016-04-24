@@ -283,16 +283,16 @@ public class ActivityListFragment extends Fragment {
             for (int i = 0; i < response.length(); i++) {
 
                 JSONObject activity = (JSONObject) response.get(i);
-                String startTime = activity.getString("start_time");
-                String endTime = activity.getString("end_time");
-                String type = activity.getString("type");
-                String id = activity.getString("id");
                 // JSONObject phone = activity.getJSONObject("phone");
                 ActivityBean activityBean = new ActivityBean();
-                activityBean.setId(id);
-                activityBean.setStartTime(startTime);
-                activityBean.setEndTime(endTime);
-                activityBean.setActivityType(type);
+                activityBean.setId(activity.getString("id"));
+                activityBean.setStartTime(activity.getString("start_time"));
+                activityBean.setEndTime(activity.getString("end_time"));
+                activityBean.setActivityType(activity.getString("type"));
+                activityBean.setStatus(activity.getString("status"));
+                activityBean.setContact(activity.getString("contact"));
+                activityBean.setGroupName(activity.getString("groupName"));
+                activityBean.setComments(activity.getString("comments"));
                 adapter.add(activityBean);
                 adapter.notifyDataSetChanged();
             }

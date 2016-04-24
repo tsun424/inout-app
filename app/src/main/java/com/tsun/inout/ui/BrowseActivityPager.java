@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
 import com.tsun.inout.R;
+import com.tsun.inout.model.ActivityBean;
 import com.tsun.inout.util.DepthPageTransformer;
 import com.tsun.inout.util.ParallaxPageTransformer;
 
@@ -36,7 +37,6 @@ public class BrowseActivityPager extends FragmentActivity {
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         mPager.setCurrentItem(1);
@@ -83,7 +83,11 @@ public class BrowseActivityPager extends FragmentActivity {
             if(position == 0){
                 return new TransparentFragment();
             }else if(position == 1){
-                return new ActivityDetailFragment();
+                ActivityDetailFragment activityDetailFragment = new ActivityDetailFragment();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("activityBean", getIntent().getExtras().getParcelable("activityBean"));
+                activityDetailFragment.setArguments(bundle);
+                return activityDetailFragment;
             }
             return null;
         }

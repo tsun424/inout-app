@@ -18,7 +18,7 @@
     <string name="unknown_end_time">Unknown End Time</string>
     <string name="contact">Contact</string>
     <string name="notify_selected">Notify Contact who has been selected</string>
-    <string name="repeat_frequency">Repeat Every</string>
+    <string name="repeat_frequency">Repeat Every: </string>
     <string name="repeat_start_date">Repeat Start Date</string>
     <string name="repeat_end_date">Repeat End Date</string>
     <string name="groups">Groups: </string>
@@ -27,6 +27,9 @@
     <string name="hint_end_time">Please choose end time</string>
     <string name="hint_repeat_start_time">Please choose repeat start time</string>
     <string name="hint_repeat_end_time">Please choose repeat end time</string>
-
-    <string name="action_settings">Settings</string>
+    <string name="time_out">Time Out: </string>
+    <string name="time_in">Time In: </string>
+    <string name="status">Status: </string>
+    <string name="label_contact">Contact: </string>
+    <string name="label_comments">Comments: </string>
 </resources>
