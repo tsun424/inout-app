@@ -293,6 +293,10 @@ public class ActivityListFragment extends Fragment {
                 activityBean.setContact(activity.getString("contact"));
                 activityBean.setGroupName(activity.getString("groupName"));
                 activityBean.setComments(activity.getString("comments"));
+                activityBean.setActivityTypeId(activity.getString("activity_type_id"));
+                activityBean.setRepeatUnit(activity.getString("repeat_unit"));
+                activityBean.setIsWorkingAlone(activity.getInt("is_working_alone"));
+                activityBean.setIsRepeat(activity.getInt("is_repeat"));
                 adapter.add(activityBean);
                 adapter.notifyDataSetChanged();
             }

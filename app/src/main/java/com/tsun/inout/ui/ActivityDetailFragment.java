@@ -1,5 +1,6 @@
 package com.tsun.inout.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -26,13 +27,18 @@ import com.tsun.inout.model.ActivityBean;
 public class ActivityDetailFragment extends Fragment {
 
     private ActivityBean activityBean;
-    private TextView tv_time_out;
-    private TextView tv_time_in;
-    private TextView tv_activity_type;
-    private TextView tv_status;
-    private TextView tv_contact;
-    private TextView tv_groups;
-    private TextView tv_comments;
+    private TextView tvTimeOut;
+    private TextView tvTimeIn;
+    private TextView tvActivityType;
+    private TextView tvStatus;
+    private TextView tvContact;
+    private TextView tvGroups;
+    private TextView tvComments;
+    private TextView tvWorkingAlone;
+    private TextView tvIsRepeat;
+
+    public static final String YES = "YES";
+    public static final String NO = "NO";
 
 
     @Override
@@ -57,26 +63,39 @@ public class ActivityDetailFragment extends Fragment {
         if (bundle != null) {
             activityBean = (ActivityBean) bundle.getParcelable("activityBean");
         }
-        tv_time_out = (TextView)rootView.findViewById(R.id.tv_time_out);
-        tv_time_in = (TextView)rootView.findViewById(R.id.tv_time_in);
-        tv_activity_type = (TextView)rootView.findViewById(R.id.tv_activity_type);
-        tv_status = (TextView)rootView.findViewById(R.id.tv_status);
-        tv_contact = (TextView)rootView.findViewById(R.id.tv_contact);
-        tv_groups = (TextView)rootView.findViewById(R.id.tv_groups);
-        tv_comments = (TextView)rootView.findViewById(R.id.tv_comments);
+        tvTimeOut = (TextView)rootView.findViewById(R.id.tv_time_out);
+        tvTimeIn = (TextView)rootView.findViewById(R.id.tv_time_in);
+        tvActivityType = (TextView)rootView.findViewById(R.id.tv_activity_type);
+        tvStatus = (TextView)rootView.findViewById(R.id.tv_status);
+        tvContact = (TextView)rootView.findViewById(R.id.tv_contact);
+        tvGroups = (TextView)rootView.findViewById(R.id.tv_groups);
+        tvComments = (TextView)rootView.findViewById(R.id.tv_comments);
+        tvWorkingAlone = (TextView)rootView.findViewById(R.id.tv_working_alone);
+        tvIsRepeat = (TextView)rootView.findViewById(R.id.tv_is_repeat);
 
         renderFragment();
         return rootView;
     }
 
     private void renderFragment(){
-        tv_time_out.setText(activityBean.getStartTime());
-        tv_time_in.setText(activityBean.getEndTime());
-        tv_activity_type.setText(activityBean.getActivityType());
-        tv_status.setText(activityBean.getStatus());
-        tv_contact.setText(activityBean.getContact());
-        tv_groups.setText(activityBean.getGroupName());
-        tv_comments.setText(activityBean.getComments());
+
+        tvTimeOut.setText(activityBean.getStartTime());
+        tvTimeIn.setText(activityBean.getEndTime());
+        tvActivityType.setText(activityBean.getActivityType());
+        tvStatus.setText(activityBean.getStatus());
+        tvContact.setText(activityBean.getContact());
+        tvGroups.setText(activityBean.getGroupName());
+        tvComments.setText(activityBean.getComments());
+        if(activityBean.getIsWorkingAlone() == 1){
+            tvWorkingAlone.setText(YES);
+        }else{
+            tvWorkingAlone.setText(NO);
+        }
+        if(activityBean.getIsRepeat() == 1){
+            tvIsRepeat.setText(YES);
+        }else{
+            tvIsRepeat.setText(NO);
+        }
     }
 
     private class OnMenuIemClick implements Toolbar.OnMenuItemClickListener{
@@ -85,7 +104,9 @@ public class ActivityDetailFragment extends Fragment {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()){
                 case R.id.menu_act_edit:
-                    System.out.println("Edit clicked");
+                    Intent intent = new Intent(getActivity().getBaseContext(), EditActivity.class);
+                    intent.putExtra("activityBean", activityBean);
+                    startActivity(intent);
                     break;
             }
             return true;

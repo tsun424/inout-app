@@ -42,7 +42,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
- *	New activity creation fragment
+ *	New activity creation
  ************************************************************************
  *	@Author Xiaoming Yang
  *	@Date	08-04-2016 11:40
@@ -59,14 +59,14 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private GestureDetectorCompat mDetector;
     private Spinner spType;
     private Spinner spRepeatUnit;
-    private TextView tv_start_time;
-    private TextView tv_end_time;
-    private TextView tv_repeat_start_time;
-    private TextView tv_repeat_end_time;
-    private EditText et_contact;
-    private EditText et_comments;
-    private EditText et_repeat_frequency;
-    private LinearLayout linear_groups;
+    private TextView tvStartTime;
+    private TextView tvEndTime;
+    private TextView tvRepeatStartTime;
+    private TextView tvRepeatEndTime;
+    private EditText etContact;
+    private EditText etComments;
+    private EditText etRepeatFrequency;
+    private LinearLayout linearGroups;
 
     private ActivityBean activityBean;                  // new activity data
     private ArrayList<Integer> groupsArrayList;
@@ -83,7 +83,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         setContentView(R.layout.activity_act_new);
         Toolbar toolbar = (Toolbar) findViewById(R.id.act_new_toolbar);
         toolbar.setTitle(R.string.new_activity);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_back);
+        toolbar.setNavigationIcon(R.drawable.btn_back);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 
@@ -105,13 +105,13 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         spRepeatUnit = (Spinner)findViewById(R.id.sp_repeat_unit);
         spRepeatUnit.setOnItemSelectedListener(spinnerSelect);
 
-        tv_start_time = (TextView)findViewById(R.id.tv_start_time);
-        tv_end_time = (TextView)findViewById(R.id.tv_end_time);
-        tv_repeat_start_time = (TextView)findViewById(R.id.tv_repeat_start_time);
-        tv_repeat_end_time = (TextView)findViewById(R.id.tv_repeat_end_time);
-        et_contact = (EditText)findViewById(R.id.et_contact);
-        et_comments = (EditText)findViewById(R.id.et_comments);
-        et_repeat_frequency = (EditText)findViewById(R.id.et_repeat_frequency);
+        tvStartTime = (TextView)findViewById(R.id.tv_start_time);
+        tvEndTime = (TextView)findViewById(R.id.tv_end_time);
+        tvRepeatStartTime = (TextView)findViewById(R.id.tv_repeat_start_time);
+        tvRepeatEndTime = (TextView)findViewById(R.id.tv_repeat_end_time);
+        etContact = (EditText)findViewById(R.id.et_contact);
+        etComments = (EditText)findViewById(R.id.et_comments);
+        etRepeatFrequency = (EditText)findViewById(R.id.et_repeat_frequency);
 
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
@@ -209,7 +209,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private void addGroups(){
         // TODO change to real userId
         String apiUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
-        linear_groups = (LinearLayout)findViewById(R.id.linear_groups);
+        linearGroups = (LinearLayout)findViewById(R.id.linear_groups);
 
         JsonArrayRequest jsArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
@@ -244,7 +244,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                 chb.setId(id);
                 chb.setText(groupName);
                 chb.setOnClickListener(new ChbOnClickListener());
-                linear_groups.addView(chb);
+                linearGroups.addView(chb);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -354,23 +354,23 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     @Override
     public void onDateTimeSet(View view, int year, int month, int day, int hourOfDay, int minute) {
         GregorianCalendar calendar = new GregorianCalendar(year, month, day, hourOfDay, minute);
+
+        SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT, Locale.UK);
+        timeSdf.setCalendar(calendar);
         SimpleDateFormat dateSdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
         dateSdf.setCalendar(calendar);
-        SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT, Locale.UK);
-        dateSdf.setCalendar(calendar);
-        timeSdf.setCalendar(calendar);
         String selectedDate = dateSdf.format(calendar.getTime());
         String selectedTime = timeSdf.format(calendar.getTime());
         switch (view.getId()){
             case R.id.btn_start_time:
                 activityBean.setStartDate(selectedDate);
                 activityBean.setStartTime(selectedTime);
-                tv_start_time.setText(selectedDate+" "+selectedTime);
+                tvStartTime.setText(selectedDate+" "+selectedTime);
                 break;
             case R.id.btn_end_time:
                 activityBean.setEndDate(selectedDate);
                 activityBean.setEndTime(selectedTime);
-                tv_end_time.setText(selectedDate+" "+selectedTime);
+                tvEndTime.setText(selectedDate+" "+selectedTime);
                 break;
         }
     }
@@ -403,21 +403,21 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         switch (view.getId()){
             case R.id.btn_repeat_start_time:
                 activityBean.setRepeatStartDate(selectedDate);
-                tv_repeat_start_time.setText(selectedDate);
+                tvRepeatStartTime.setText(selectedDate);
                 break;
             case R.id.btn_repeat_end_time:
                 activityBean.setRepeatEndDate(selectedDate);
-                tv_repeat_end_time.setText(selectedDate);
+                tvRepeatEndTime.setText(selectedDate);
                 break;
         }
     }
 
     public void save(){
 
-        activityBean.setContact(et_contact.getText().toString());
-        activityBean.setComments(et_comments.getText().toString());
-        if(!("".equals(et_repeat_frequency.getText().toString()))){
-            activityBean.setRepeatFrequency(Integer.parseInt(et_repeat_frequency.getText().toString()));
+        activityBean.setContact(etContact.getText().toString());
+        activityBean.setComments(etComments.getText().toString());
+        if(!("".equals(etRepeatFrequency.getText().toString()))){
+            activityBean.setRepeatFrequency(Integer.parseInt(etRepeatFrequency.getText().toString()));
         }
 
         ringProgressDialog = ProgressDialog.show(this, "Please wait ...", "Saving data ...", true);

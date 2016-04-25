@@ -28,6 +28,7 @@ public class ActivityBean implements Parcelable{
     private int isRepeat;
     private String repeatId;
     private String repeatUnit;
+    private String repeatUnitName;
     private String repeatStartDate;
     private String repeatEndDate;
     private int repeatFrequency;
@@ -63,6 +64,7 @@ public class ActivityBean implements Parcelable{
         dest.writeInt(this.isWorkingAlone);
         dest.writeInt(this.isRepeat);
         dest.writeString(this.repeatUnit);
+        dest.writeString(this.repeatUnitName);
         dest.writeInt(this.repeatFrequency);
         dest.writeString(this.repeatStartDate);
         dest.writeString(this.repeatEndDate);
@@ -92,6 +94,7 @@ public class ActivityBean implements Parcelable{
         this.isWorkingAlone = in.readInt();
         this.isRepeat = in.readInt();
         this.repeatUnit = in.readString();
+        this.repeatUnitName = in.readString();
         this.repeatFrequency = in.readInt();
         this.repeatStartDate = in.readString();
         this.repeatEndDate = in.readString();
@@ -292,6 +295,22 @@ public class ActivityBean implements Parcelable{
 
     public String getUserId() {
         return userId;
+    }
+
+    public void setRepeatUnitName(String repeatUnitName) {
+        this.repeatUnitName = repeatUnitName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getRepeatUnitName() {
+        return repeatUnitName;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public JSONObject toJSONObject(){
