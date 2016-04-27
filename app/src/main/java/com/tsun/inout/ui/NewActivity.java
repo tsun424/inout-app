@@ -1,6 +1,9 @@
 package com.tsun.inout.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -412,6 +415,10 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
     public void save(){
 
+        if(!checkConnectivity()){
+            return;
+        }
+
         activityBean.setContact(etContact.getText().toString());
         activityBean.setComments(etComments.getText().toString());
         if(!("".equals(etRepeatFrequency.getText().toString()))){
@@ -453,5 +460,17 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                         handleError(error.toString());
                     }
                 });
+    }
+
+    public boolean checkConnectivity() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if(!(networkInfo != null && networkInfo.isConnected())){
+            Toast.makeText(getBaseContext(), "Your device is not connected to Internet, please check network.", Toast.LENGTH_LONG).show();
+            return false;
+        }else{
+            return true;
+        }
     }
 }

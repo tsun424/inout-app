@@ -2,6 +2,8 @@ package com.tsun.inout.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -154,6 +156,10 @@ public class ActivityListFragment extends Fragment {
 
     private void getActivityList(){
 
+        if(!checkConnectivity()){
+            return;
+        }
+
         // TODO change user id
         // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
         String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
@@ -182,6 +188,10 @@ public class ActivityListFragment extends Fragment {
     }
 
     private void doCheckIn(String activityId, final int position){
+
+        if(!checkConnectivity()){
+            return;
+        }
 
         String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/checkIn/"+activityId;
 
@@ -215,6 +225,9 @@ public class ActivityListFragment extends Fragment {
 
     private void doDelete(String activityId, final int position){
 
+        if(!checkConnectivity()){
+            return;
+        }
 
         String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityId;
 
@@ -358,7 +371,7 @@ public class ActivityListFragment extends Fragment {
         if(ringProgressDialog.isShowing()){
             ringProgressDialog.dismiss();
         }
-        if(swipeRefresh.isRefreshing()){
+        if(swipeRefresh != null && swipeRefresh.isRefreshing()){
             swipeRefresh.setRefreshing(false);
         }
     }
@@ -367,4 +380,16 @@ public class ActivityListFragment extends Fragment {
         public void onActivitySelected(ActivityBean activityBean);
     }
 
+    public boolean checkConnectivity() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if(!(networkInfo != null && networkInfo.isConnected())){
+            dismissEffect();
+            Toast.makeText(getContext(), "Your device is not connected to Internet, please check network.", Toast.LENGTH_LONG).show();
+            return false;
+        }else{
+            return true;
+        }
+    }
 }

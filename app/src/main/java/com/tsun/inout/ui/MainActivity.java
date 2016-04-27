@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), NewActivity.class);
             startActivityForResult(intent, PICK_NEW_RESULT);
         } else if (id == R.id.nav_exit) {
-
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
