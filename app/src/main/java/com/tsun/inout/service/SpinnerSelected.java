@@ -35,7 +35,7 @@ public class SpinnerSelected implements AdapterView.OnItemSelectedListener {
         if(spinner.getId() == R.id.sp_act_type){
             activityBean.setActivityTypeId(lookUpId);
         }else if(spinner.getId() == R.id.sp_repeat_unit){
-            activityBean.setRepeatUnit(lookUpId);
+            activityBean.setRepeatUnitId(lookUpId);
         }
 
     }

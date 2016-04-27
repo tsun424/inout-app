@@ -3,8 +3,11 @@ package com.tsun.inout.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  *	record all information of activity
@@ -21,13 +24,15 @@ public class ActivityBean implements Parcelable{
     private String endDate;
     private String startTime;
     private String endTime;
+    private String startDateTime;
+    private String endDateTime;
     private String comments;
     private String status;
     private String activityTypeId;
     private String id;
     private int isRepeat;
     private String repeatId;
-    private String repeatUnit;
+    private String repeatUnitId;
     private String repeatUnitName;
     private String repeatStartDate;
     private String repeatEndDate;
@@ -42,9 +47,10 @@ public class ActivityBean implements Parcelable{
     private String userName;
     private String groupName;
     private String userId;
+    private ArrayList<Integer> selectedGroups;
 
     public ActivityBean(){
-
+        selectedGroups = new ArrayList<Integer>();
     }
 
     @Override
@@ -55,15 +61,15 @@ public class ActivityBean implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.id);
-        dest.writeString(this.startTime);
-        dest.writeString(this.endTime);
+        dest.writeString(this.startDateTime);
+        dest.writeString(this.endDateTime);
         dest.writeString(this.comments);
         dest.writeString(this.status);
         dest.writeString(this.activityTypeId);
         dest.writeString(this.contact);
         dest.writeInt(this.isWorkingAlone);
         dest.writeInt(this.isRepeat);
-        dest.writeString(this.repeatUnit);
+        dest.writeString(this.repeatUnitId);
         dest.writeString(this.repeatUnitName);
         dest.writeInt(this.repeatFrequency);
         dest.writeString(this.repeatStartDate);
@@ -71,6 +77,7 @@ public class ActivityBean implements Parcelable{
         dest.writeString(this.repeatId);
         dest.writeString(this.groupName);
         dest.writeString(this.activityType);
+        dest.writeSerializable(this.selectedGroups);
     }
 
     public static final Parcelable.Creator<ActivityBean> CREATOR
@@ -85,15 +92,15 @@ public class ActivityBean implements Parcelable{
     };
     private ActivityBean(Parcel in) {
         this.id = in.readString();
-        this.startTime = in.readString();
-        this.endTime = in.readString();
+        this.startDateTime = in.readString();
+        this.endDateTime = in.readString();
         this.comments = in.readString();
         this.status = in.readString();
         this.activityTypeId = in.readString();
         this.contact = in.readString();
         this.isWorkingAlone = in.readInt();
         this.isRepeat = in.readInt();
-        this.repeatUnit = in.readString();
+        this.repeatUnitId = in.readString();
         this.repeatUnitName = in.readString();
         this.repeatFrequency = in.readInt();
         this.repeatStartDate = in.readString();
@@ -101,6 +108,7 @@ public class ActivityBean implements Parcelable{
         this.repeatId = in.readString();
         this.groupName = in.readString();
         this.activityType = in.readString();
+        this.selectedGroups =  (ArrayList<Integer>) in.readSerializable();
     }
 
 
@@ -153,12 +161,12 @@ public class ActivityBean implements Parcelable{
         this.id = id;
     }
 
-    public String getRepeatUnit() {
-        return repeatUnit;
+    public String getRepeatUnitId() {
+        return repeatUnitId;
     }
 
-    public void setRepeatUnit(String repeatUnit) {
-        this.repeatUnit = repeatUnit;
+    public void setRepeatUnitId(String repeatUnitId) {
+        this.repeatUnitId = repeatUnitId;
     }
 
     public int getIsWorkingAlone() {
@@ -313,6 +321,30 @@ public class ActivityBean implements Parcelable{
         return userName;
     }
 
+    public void setSelectedGroups(ArrayList<Integer> selectedGroups) {
+        this.selectedGroups = selectedGroups;
+    }
+
+    public ArrayList<Integer> getSelectedGroups() {
+        return selectedGroups;
+    }
+
+    public void setStartDateTime(String startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
+    public void setEndDateTime(String endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
+    public String getStartDateTime() {
+        return startDateTime;
+    }
+
+    public String getEndDateTime() {
+        return endDateTime;
+    }
+
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -329,9 +361,17 @@ public class ActivityBean implements Parcelable{
             jsonObject.put("comments", this.getComments());
             if(this.getRepeatFrequency() != 0 && !("".equals(this.getEndDate())) && this.getEndDate() != null){
                 jsonObject.put("repeatFrequency", this.getRepeatFrequency());
-                jsonObject.put("repeatUnit", this.getRepeatUnit());
+                jsonObject.put("repeatUnit", this.getRepeatUnitId());
                 jsonObject.put("repeatStartDate", this.getRepeatStartDate());
                 jsonObject.put("repeatEndDate", this.getRepeatEndDate());
+            }
+            if(!selectedGroups.isEmpty()){
+                JSONArray jsonArray = new JSONArray(selectedGroups);
+                try {
+                    jsonObject.put("selectedGroups",jsonArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
         } catch (JSONException e) {

@@ -66,8 +66,11 @@ public class ActivityAdapter extends BaseAdapter {
 
         TextView actTimeTv = (TextView)ll.findViewById(R.id.act_duration);
         TextView actDescription = (TextView)ll.findViewById(R.id.act_type);
-
-        String actTime = data.getStartTime()+" to "+data.getEndTime();
+        String endDateTime = data.getEndDateTime();
+        if(data.getEndDateTime() == null || "null".equals(data.getEndDateTime())){
+            endDateTime = "Unknown End Time";
+        }
+        String actTime = data.getStartDateTime()+" to "+endDateTime;
         actTimeTv.setText(actTime);
         actDescription.setText(data.getActivityType());
 

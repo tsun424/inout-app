@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
 
+import java.util.ArrayList;
+
 /**
  *	browse details of an activity
  ************************************************************************
@@ -39,7 +41,7 @@ public class ActivityDetailFragment extends Fragment {
 
     public static final String YES = "YES";
     public static final String NO = "NO";
-
+    public static final int PICK_EDIT_RESULT = 2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,8 +81,8 @@ public class ActivityDetailFragment extends Fragment {
 
     private void renderFragment(){
 
-        tvTimeOut.setText(activityBean.getStartTime());
-        tvTimeIn.setText(activityBean.getEndTime());
+        tvTimeOut.setText(activityBean.getStartDateTime());
+        tvTimeIn.setText(activityBean.getEndDateTime());
         tvActivityType.setText(activityBean.getActivityType());
         tvStatus.setText(activityBean.getStatus());
         tvContact.setText(activityBean.getContact());
@@ -106,11 +108,23 @@ public class ActivityDetailFragment extends Fragment {
                 case R.id.menu_act_edit:
                     Intent intent = new Intent(getActivity().getBaseContext(), EditActivity.class);
                     intent.putExtra("activityBean", activityBean);
-                    startActivity(intent);
+                    startActivityForResult(intent, PICK_EDIT_RESULT);
                     break;
             }
             return true;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_EDIT_RESULT){
+            if(resultCode == getActivity().RESULT_OK){
+                activityBean = (ActivityBean)data.getExtras().getParcelable("updatedBean");
+                renderFragment();
+            }
+        }
+
     }
 
 }

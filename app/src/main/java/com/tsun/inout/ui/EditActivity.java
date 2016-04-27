@@ -35,24 +35,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
- *	New activity creation
+ *	Edit activity
  ************************************************************************
  *	@Author Xiaoming Yang
- *	@Date	08-04-2016 11:40
+ *	@Date	24-04-2016 12:40
  ************************************************************************
  *	update time			editor				updated information
  */
 
-public class NewActivity extends AppCompatActivity implements View.OnTouchListener,
+public class EditActivity extends AppCompatActivity implements View.OnTouchListener,
         DateTimePickerFragment.onDateTimeSetListener,
         DatePickerFragment.onDateSelectedListener {
 
     private RequestQueue queue;
+
     private ProgressDialog ringProgressDialog;
     private GestureDetectorCompat mDetector;
     private Spinner spType;
@@ -65,11 +70,15 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private EditText etComments;
     private EditText etRepeatFrequency;
     private LinearLayout linearGroups;
+    private CheckBox chbWorkingAlone;
 
     private ActivityBean activityBean;                  // new activity data
-    private static final String TIME_FORMAT = "HH:mm:ss";
-    private static final String DATE_FORMAT = "dd-MM-yyyy";
+    private String updRepeat;
+    private ArrayList<String> groupNameArrayList;
 
+    private static final String TIME_FORMAT = "HH:mm:ss";
+    private static final String NZ_DATE_FORMAT = "dd-MM-yyyy";
+    private static final String NZ_DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
     public static final int HORIZON_MIN_DISTANCE = 30;
     public static final String TAG = "jsRequest";
     public static final int HTTP_TIMEOUT_MS = 10000;
@@ -77,9 +86,9 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_new);
+        setContentView(R.layout.activity_act_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.act_new_toolbar);
-        toolbar.setTitle(R.string.new_activity);
+        toolbar.setTitle(R.string.edit_activity);
         toolbar.setNavigationIcon(R.drawable.btn_back);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
@@ -92,7 +101,14 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         queue = Volley.newRequestQueue(this);
         getSelectData();
 
-        activityBean = new ActivityBean();
+        activityBean = (ActivityBean) getIntent().getExtras().getParcelable("activityBean");
+        updRepeat = "false";        // string type is for being compatible with website updRepeat
+        if(activityBean.getGroupName() != null){
+            groupNameArrayList = new ArrayList<String>(Arrays.asList(activityBean.getGroupName().split(",")));
+        }else{
+            groupNameArrayList = new ArrayList<String>();
+        }
+
 
         // get view components
         SpinnerSelected spinnerSelect = new SpinnerSelected(activityBean);
@@ -108,11 +124,43 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         etContact = (EditText)findViewById(R.id.et_contact);
         etComments = (EditText)findViewById(R.id.et_comments);
         etRepeatFrequency = (EditText)findViewById(R.id.et_repeat_frequency);
+        chbWorkingAlone = (CheckBox)findViewById(R.id.chb_working_alone);
 
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
         mDetector = new GestureDetectorCompat(this,new MyGestureListener());
 
+    }
+
+    private void renderPage(){
+        if(activityBean.getIsWorkingAlone() == 1){
+            chbWorkingAlone.setChecked(true);
+        }
+        SimpleDateFormat nzDateTimeSdf = new SimpleDateFormat(NZ_DATE_TIME_FORMAT);
+        SimpleDateFormat dateSdf = new SimpleDateFormat(NZ_DATE_FORMAT);
+        SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT);
+
+        String startDateTimeStr = activityBean.getStartDateTime();
+        String endDateTimeStr = activityBean.getEndDateTime();
+        tvStartTime.setText(startDateTimeStr);
+        tvEndTime.setText(endDateTimeStr);
+        try {
+            Date startDateTime = nzDateTimeSdf.parse(startDateTimeStr);
+            Date endDateTime = nzDateTimeSdf.parse(endDateTimeStr);
+            activityBean.setStartDate(dateSdf.format(startDateTime));
+            activityBean.setEndDate(dateSdf.format(endDateTime));
+            activityBean.setStartTime(timeSdf.format(startDateTime));
+            activityBean.setEndTime(timeSdf.format(endDateTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        etContact.setText(activityBean.getContact());
+        etComments.setText(activityBean.getComments());
+        if(activityBean.getIsRepeat() == 1){
+            etRepeatFrequency.setText(activityBean.getRepeatFrequency()+"");
+            tvRepeatStartDate.setText(activityBean.getRepeatStartDate());
+            tvRepeatEndDate.setText(activityBean.getRepeatEndDate());
+        }
     }
 
     @Override
@@ -215,6 +263,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                     @Override
                     public void onResponse(JSONArray response) {
                         renderGroups(response);
+                        renderPage();
                     }
                 }, new Response.ErrorListener() {
 
@@ -242,6 +291,10 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                 chb.setId(id);
                 chb.setText(groupName);
                 chb.setOnClickListener(new ChbOnClickListener());
+                if(activityBean.getSelectedGroups() != null && !activityBean.getSelectedGroups().isEmpty()
+                        && activityBean.getSelectedGroups().indexOf(id) > -1){
+                    chb.setChecked(true);
+                }
                 linearGroups.addView(chb);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -253,12 +306,19 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         @Override
         public void onClick(View v) {
             CheckBox chb = (CheckBox)v;
-            if(chb.isChecked()){
+            if(chb.isChecked() && activityBean.getSelectedGroups().indexOf(chb.getId()) == -1){
                 activityBean.getSelectedGroups().add(chb.getId());
+                if(groupNameArrayList.indexOf(chb.getText().toString()) == -1){
+                    groupNameArrayList.add(chb.getText().toString());
+                }
             }else{
                 int idx = activityBean.getSelectedGroups().indexOf(chb.getId());
                 if(idx > -1){
                     activityBean.getSelectedGroups().remove(idx);
+                }
+                int nameIdx = groupNameArrayList.indexOf(chb.getText().toString());
+                if(nameIdx > -1){
+                    groupNameArrayList.remove(nameIdx);
                 }
             }
         }
@@ -296,7 +356,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
     private void renderSpinner(JSONArray jsonArray, Spinner spinner){
         ArrayAdapter<LookupBean> adapter = new ArrayAdapter<LookupBean>(this,android.R.layout.simple_spinner_dropdown_item);
-
+        int selectedPosition = -1;
         for (int i = 0; i< jsonArray.length(); i++) {
             try {
                 JSONObject lookup = (JSONObject) jsonArray.get(i);
@@ -304,11 +364,17 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                 String name = lookup.getString("name");
                 LookupBean lookupBean = new LookupBean(id, name);
                 adapter.add(lookupBean);
+                if(activityBean.getActivityTypeId().equals(id)){
+                    selectedPosition = adapter.getPosition(lookupBean);
+                }else if(activityBean.getRepeatUnitId().equals(id)){
+                    selectedPosition = adapter.getPosition(lookupBean);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         spinner.setAdapter(adapter);
+        spinner.setSelection(selectedPosition);
     }
 
     public void onCheckboxClicked(View view) {
@@ -326,6 +392,13 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
             case R.id.chb_unknown_time:
                 if (checked){
                     //set null to related fields
+                }
+                break;
+            case R.id.chb_edit_repeat:
+                if (checked){
+                    updRepeat = "true";
+                }else{
+                    updRepeat = "false";
                 }
                 break;
         }
@@ -352,23 +425,25 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     @Override
     public void onDateTimeSet(View view, int year, int month, int day, int hourOfDay, int minute) {
         GregorianCalendar calendar = new GregorianCalendar(year, month, day, hourOfDay, minute);
-
+        SimpleDateFormat dateSdf = new SimpleDateFormat(NZ_DATE_FORMAT, Locale.UK);
+        dateSdf.setCalendar(calendar);
         SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT, Locale.UK);
         timeSdf.setCalendar(calendar);
-        SimpleDateFormat dateSdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
-        dateSdf.setCalendar(calendar);
         String selectedDate = dateSdf.format(calendar.getTime());
         String selectedTime = timeSdf.format(calendar.getTime());
+        String selectedDateTime = selectedDate+" "+selectedTime;
         switch (view.getId()){
             case R.id.btn_start_time:
                 activityBean.setStartDate(selectedDate);
                 activityBean.setStartTime(selectedTime);
-                tvStartTime.setText(selectedDate+" "+selectedTime);
+                activityBean.setStartDateTime(selectedDateTime);
+                tvStartTime.setText(selectedDateTime);
                 break;
             case R.id.btn_end_time:
                 activityBean.setEndDate(selectedDate);
                 activityBean.setEndTime(selectedTime);
-                tvEndTime.setText(selectedDate+" "+selectedTime);
+                activityBean.setEndDateTime(selectedDateTime);
+                tvEndTime.setText(selectedDateTime);
                 break;
         }
     }
@@ -395,7 +470,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     public void onDateSelected(View view, int year, int month, int day) {
 
         GregorianCalendar calendar = new GregorianCalendar(year, month, day);
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
+        SimpleDateFormat sdf = new SimpleDateFormat(NZ_DATE_FORMAT, Locale.UK);
         sdf.setCalendar(calendar);
         String selectedDate = sdf.format(calendar.getTime());
         switch (view.getId()){
@@ -421,12 +496,17 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         ringProgressDialog = ProgressDialog.show(this, "Please wait ...", "Saving data ...", true);
         ringProgressDialog.setCancelable(false);
         JSONObject activityJsonObject = activityBean.toJSONObject();
-
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity";
-        String apiUrl = "http://10.0.2.2/inout/public/index.php/activity";
+        try {
+            activityJsonObject.put("updRepeat", updRepeat);
+        } catch (JSONException e) {
+            ringProgressDialog.dismiss();
+            e.printStackTrace();
+        }
+        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityBean.getId();
+        String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/"+activityBean.getId();
 
         doJsonObjectRequest
-                (Request.Method.POST, apiUrl, activityJsonObject, new Response.Listener<JSONObject>() {
+                (Request.Method.PUT, apiUrl, activityJsonObject, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
@@ -434,8 +514,12 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                         try {
                             int result = response.getInt("result");
                             if(result == 1){
-                                Toast.makeText(getBaseContext(), "Save activity successfully.", Toast.LENGTH_LONG).show();
-                                setResult(RESULT_OK);
+                                Toast.makeText(getBaseContext(), "Edit activity successfully.", Toast.LENGTH_LONG).show();
+                                if(!groupNameArrayList.isEmpty()){
+                                    activityBean.setGroupName(android.text.TextUtils.join(",", groupNameArrayList));
+                                }
+                                getIntent().putExtra("updatedBean", activityBean);
+                                setResult(RESULT_OK, getIntent());
                                 finish();
                             }else{
                                 String errorMsg = response.getString("errorMsg");

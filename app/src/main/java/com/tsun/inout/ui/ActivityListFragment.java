@@ -32,6 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 /**
  *	List all my current activities
  ************************************************************************
@@ -50,6 +53,10 @@ public class ActivityListFragment extends Fragment {
     private JsonArrayRequest jsArrayRequest;
     private OnActivityListSelectedListener mCallback;
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final String NZ_DATE_FORMAT = "dd-MM-yyyy";
+    private static final String NZ_DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
     public static final String TAG = "jsRequest";
     public static final int HTTP_TIMEOUT_MS = 10000;
 
@@ -147,7 +154,9 @@ public class ActivityListFragment extends Fragment {
 
     private void getActivityList(){
 
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity";
+        // TODO change user id
+        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
+        String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
 
         jsArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
@@ -278,25 +287,51 @@ public class ActivityListFragment extends Fragment {
         try {
             adapter = new ActivityAdapter(getContext());
             actLv.setAdapter(adapter);
+            SimpleDateFormat dateTimeSdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+            SimpleDateFormat nzDateTimeSdf = new SimpleDateFormat(NZ_DATE_TIME_FORMAT);
+            SimpleDateFormat nzDateSdf = new SimpleDateFormat(NZ_DATE_FORMAT);
+            SimpleDateFormat DateSdf = new SimpleDateFormat(DATE_FORMAT);
             // Parsing json array response
             // loop through each json object
             for (int i = 0; i < response.length(); i++) {
 
                 JSONObject activity = (JSONObject) response.get(i);
-                // JSONObject phone = activity.getJSONObject("phone");
                 ActivityBean activityBean = new ActivityBean();
                 activityBean.setId(activity.getString("id"));
-                activityBean.setStartTime(activity.getString("start_time"));
-                activityBean.setEndTime(activity.getString("end_time"));
-                activityBean.setActivityType(activity.getString("type"));
+                try {
+                    activityBean.setStartDateTime(nzDateTimeSdf.format(dateTimeSdf.parse(activity.getString("start_time"))));
+                    String tempEndDateTime = activity.getString("end_time");
+                    if(!"".equals(tempEndDateTime) && tempEndDateTime != null && !"null".equals(tempEndDateTime)){
+                        activityBean.setEndDateTime(nzDateTimeSdf.format(dateTimeSdf.parse(activity.getString("end_time"))));
+                    }
+                } catch (ParseException e) {
+                    dismissEffect();
+                    e.printStackTrace();
+                }
+                activityBean.setActivityType(activity.getString("activity_type"));
                 activityBean.setStatus(activity.getString("status"));
                 activityBean.setContact(activity.getString("contact"));
-                activityBean.setGroupName(activity.getString("groupName"));
+                activityBean.setGroupName(activity.getString("group_name"));
                 activityBean.setComments(activity.getString("comments"));
                 activityBean.setActivityTypeId(activity.getString("activity_type_id"));
-                activityBean.setRepeatUnit(activity.getString("repeat_unit"));
                 activityBean.setIsWorkingAlone(activity.getInt("is_working_alone"));
                 activityBean.setIsRepeat(activity.getInt("is_repeat"));
+                if(activityBean.getIsRepeat() == 1){
+                    activityBean.setRepeatFrequency(activity.getInt("repeat_frequency"));
+                    activityBean.setRepeatUnitId(activity.getString("repeat_unit"));
+                    try {
+                        activityBean.setRepeatStartDate(nzDateSdf.format(DateSdf.parse(activity.getString("repeat_start_date"))));
+                        activityBean.setRepeatEndDate(nzDateSdf.format(DateSdf.parse(activity.getString("repeat_end_date"))));
+                    } catch (ParseException e) {
+                        dismissEffect();
+                        e.printStackTrace();
+                    }
+                }
+                JSONArray selectedGroups = activity.getJSONArray("groups");
+                for(int j = 0; j < selectedGroups.length(); j++){
+                    JSONObject group = (JSONObject)selectedGroups.get(j);
+                    activityBean.getSelectedGroups().add(group.getInt("id"));
+                }
                 adapter.add(activityBean);
                 adapter.notifyDataSetChanged();
             }
@@ -304,6 +339,7 @@ public class ActivityListFragment extends Fragment {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            dismissEffect();
             Toast.makeText(getContext(),
                     "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
