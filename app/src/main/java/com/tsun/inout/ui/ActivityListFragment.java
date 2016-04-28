@@ -2,6 +2,8 @@ package com.tsun.inout.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
@@ -55,12 +57,15 @@ public class ActivityListFragment extends Fragment {
     private JsonArrayRequest jsArrayRequest;
     private OnActivityListSelectedListener mCallback;
 
+    private int currentEditPosition;        // current edit position
+
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String NZ_DATE_FORMAT = "dd-MM-yyyy";
     private static final String NZ_DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
     public static final String TAG = "jsRequest";
     public static final int HTTP_TIMEOUT_MS = 10000;
+    public static final int PICK_EDIT_RESULT = 2;
 
     public ActivityListFragment() {
         // Required empty public constructor
@@ -96,7 +101,11 @@ public class ActivityListFragment extends Fragment {
             public void onRefresh() {
                 // This method performs the actual data-refresh operation.
                 // The method calls setRefreshing(false) when it's finished.
-                queue.add(jsArrayRequest);
+                if(jsArrayRequest != null){
+                    queue.add(jsArrayRequest);
+                }else{
+                    getActivityList();
+                }
             }
         });
 
@@ -130,8 +139,13 @@ public class ActivityListFragment extends Fragment {
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+        ActivityBean activityBean = (ActivityBean)adapter.getItem(((AdapterView.AdapterContextMenuInfo)menuInfo).position);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.list_long_click, menu);
+        if(activityBean.getIsRepeat() != 1){
+            MenuItem deleteAllItem = menu.findItem(R.id.delete_all);
+            deleteAllItem.setVisible(false);
+        }
     }
 
     @Override
@@ -144,10 +158,16 @@ public class ActivityListFragment extends Fragment {
                 doCheckIn(activityBean.getId(), info.position);
                 return true;
             case R.id.edit:
+                // do edit
+                doEdit(activityBean.getId(), info.position);
                 return true;
             case R.id.delete:
                 // delete the activity
                 doDelete(activityBean.getId(), info.position);
+                return true;
+            case R.id.delete_all:
+                // delete the activity
+                doDeleteAll(activityBean.getId(), info.position);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -161,8 +181,9 @@ public class ActivityListFragment extends Fragment {
         }
 
         // TODO change user id
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
-        String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
+        // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
+        // String apiUrl = "http://192.168.1.4/inout/public/index.php/activity/getMyOwnActivity/"+"1";
 
         jsArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
@@ -170,6 +191,7 @@ public class ActivityListFragment extends Fragment {
                     @Override
                     public void onResponse(JSONArray response) {
                         renderList(response);
+                        cacheData();
                     }
                 }, new Response.ErrorListener() {
 
@@ -256,6 +278,66 @@ public class ActivityListFragment extends Fragment {
                         handleError(error.toString());
                     }
                 }, 2);
+    }
+
+    private void doDeleteAll(String activityId, final int position){
+        if(!checkConnectivity()){
+            return;
+        }
+
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/delAll/"+activityId;
+
+        doJsonObjectRequest
+                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int result = response.getInt("result");
+                            if(result == 1){
+                                adapter.removeItem(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                            dismissEffect();
+                            Toast.makeText(getContext(),
+                                    "Delete the activity successfully.", Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError(error.toString());
+                    }
+                }, 2);
+    }
+
+    private void doEdit(String activityId, final int position){
+
+        if(!checkConnectivity()){
+            return;
+        }
+
+        Intent intent = new Intent(getActivity().getBaseContext(), EditActivity.class);
+        intent.putExtra("activityBean", (ActivityBean)adapter.getItem(position));
+        currentEditPosition = position;
+        startActivityForResult(intent, PICK_EDIT_RESULT);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_EDIT_RESULT){
+            if(resultCode == getActivity().RESULT_OK){
+                ActivityBean activityBean = (ActivityBean)data.getExtras().getParcelable("updatedBean");
+                adapter.updateItem(currentEditPosition, activityBean);
+                adapter.notifyDataSetChanged();
+            }
+        }
+
     }
 
 
@@ -386,10 +468,69 @@ public class ActivityListFragment extends Fragment {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if(!(networkInfo != null && networkInfo.isConnected())){
             dismissEffect();
-            Toast.makeText(getContext(), "Your device is not connected to Internet, please check network.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Your device is not connected to Internet, please check network connectivity.", Toast.LENGTH_LONG).show();
             return false;
         }else{
             return true;
         }
+    }
+
+    private void cacheData(){
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/lookup";
+        // String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
+
+        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, apiUrl, null,
+            new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                            getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("selectData", response.toString());
+                    editor.commit();
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    handleError(error.toString());
+                }
+            });
+        jsObjectRequest.setTag(TAG);
+        jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                HTTP_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(jsObjectRequest);
+
+        String getGroupsUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
+        // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
+
+        JsonArrayRequest jsArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, getGroupsUrl, null, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("myGroups", response.toString());
+                        editor.commit();
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError("Getting data error...");
+                    }
+                });
+        jsArrayRequest.setTag(TAG);
+        jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                HTTP_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // Add the request to the RequestQueue.
+        queue.add(jsArrayRequest);
     }
 }

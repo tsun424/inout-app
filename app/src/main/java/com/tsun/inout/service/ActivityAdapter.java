@@ -84,4 +84,10 @@ public class ActivityAdapter extends BaseAdapter {
     public void emptyAdapter(){
         this.actList = new ArrayList<ActivityBean>();
     }
+
+    public void updateItem(int position, ActivityBean activityBean){
+        if(actList.get(position) != null){
+            actList.set(position, activityBean);
+        }
+    }
 }

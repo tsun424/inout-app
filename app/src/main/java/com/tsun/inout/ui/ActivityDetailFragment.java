@@ -1,15 +1,15 @@
 package com.tsun.inout.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tsun.inout.R;
@@ -48,8 +48,11 @@ public class ActivityDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.activity_act_details, container, false);
+        AppBarLayout appBarLayout = (AppBarLayout)rootView.findViewById(R.id.act_details_bar);
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.act_details_toolbar);
+        toolbar.setBackgroundColor(0xff3eadeb);
         toolbar.setTitle(R.string.activity_details);
+        toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setNavigationIcon(R.drawable.btn_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 

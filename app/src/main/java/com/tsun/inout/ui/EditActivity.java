@@ -2,6 +2,7 @@ package com.tsun.inout.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -102,7 +104,6 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
             }
         });
         queue = Volley.newRequestQueue(this);
-        getSelectData();
 
         activityBean = (ActivityBean) getIntent().getExtras().getParcelable("activityBean");
         updRepeat = "false";        // string type is for being compatible with website updRepeat
@@ -111,7 +112,6 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         }else{
             groupNameArrayList = new ArrayList<String>();
         }
-
 
         // get view components
         SpinnerSelected spinnerSelect = new SpinnerSelected(activityBean);
@@ -132,7 +132,8 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
         mDetector = new GestureDetectorCompat(this,new MyGestureListener());
-
+        getSelectData();
+        renderPage();
     }
 
     private void renderPage(){
@@ -227,64 +228,92 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
 
     private void getSelectData(){
 
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/lookup";
-        String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(sharedPref.getString("selectData","{}"));
+            if(jsonObject.length() > 0){
+                JSONArray activityType = (JSONArray)jsonObject.getJSONArray("activityType");
+                renderSpinner(activityType, spType);
+                JSONArray repeatUnit = (JSONArray)jsonObject.getJSONArray("repeatUnit");
+                renderSpinner(repeatUnit, spRepeatUnit);
+                getGroups();
+            }else{
+                String apiUrl = "http://benwk.azurewebsites.net/public/index.php/lookup";
+                // String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
 
-        doJsonObjectRequest
-                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
+                doJsonObjectRequest
+                        (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray activityType = (JSONArray)response.getJSONArray("activityType");
-                            renderSpinner(activityType, spType);
-                            JSONArray repeatUnit = (JSONArray)response.getJSONArray("repeatUnit");
-                            renderSpinner(repeatUnit, spRepeatUnit);
-                            addGroups();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    JSONArray activityType = (JSONArray)response.getJSONArray("activityType");
+                                    renderSpinner(activityType, spType);
+                                    JSONArray repeatUnit = (JSONArray)response.getJSONArray("repeatUnit");
+                                    renderSpinner(repeatUnit, spRepeatUnit);
+                                    getGroups();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        handleError(error.toString());
-                    }
-                });
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                handleError(error.toString());
+                            }
+                        });
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void addGroups(){
-        // TODO change to real userId
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
-        String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
-        linearGroups = (LinearLayout)findViewById(R.id.linear_groups);
+    private void getGroups(){
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray("[]");
+            jsonArray = new JSONArray(sharedPref.getString("myGroups","[]"));
+            if(jsonArray.length() > 0){
+                renderGroups(jsonArray);
+            }else{
+                // TODO change to real userId
+                String apiUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
+                // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
 
-        JsonArrayRequest jsArrayRequest = new JsonArrayRequest
-                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
+                JsonArrayRequest jsArrayRequest = new JsonArrayRequest
+                        (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
 
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        renderGroups(response);
-                        renderPage();
-                    }
-                }, new Response.ErrorListener() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                renderGroups(response);
+                            }
+                        }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        handleError("Getting data error...");
-                    }
-                });
-        jsArrayRequest.setTag(TAG);
-        jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
-                HTTP_TIMEOUT_MS,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        // Add the request to the RequestQueue.
-        queue.add(jsArrayRequest);
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                handleError("Getting data error...");
+                            }
+                        });
+                jsArrayRequest.setTag(TAG);
+                jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                        HTTP_TIMEOUT_MS,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                // Add the request to the RequestQueue.
+                queue.add(jsArrayRequest);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void renderGroups(JSONArray response){
+        linearGroups = (LinearLayout)findViewById(R.id.linear_groups);
         for(int i = 0; i < response.length(); i++){
             try {
                 JSONObject group = (JSONObject) response.get(i);
@@ -369,7 +398,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
                 adapter.add(lookupBean);
                 if(activityBean.getActivityTypeId().equals(id)){
                     selectedPosition = adapter.getPosition(lookupBean);
-                }else if(activityBean.getRepeatUnitId().equals(id)){
+                }else if(activityBean.getRepeatUnitId() != null && activityBean.getRepeatUnitId().equals(id)){
                     selectedPosition = adapter.getPosition(lookupBean);
                 }
             } catch (JSONException e) {
@@ -509,8 +538,8 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
             ringProgressDialog.dismiss();
             e.printStackTrace();
         }
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityBean.getId();
-        String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/"+activityBean.getId();
+        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityBean.getId();
+        // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/"+activityBean.getId();
 
         doJsonObjectRequest
                 (Request.Method.PUT, apiUrl, activityJsonObject, new Response.Listener<JSONObject>() {
@@ -527,6 +556,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
                                 }
                                 getIntent().putExtra("updatedBean", activityBean);
                                 setResult(RESULT_OK, getIntent());
+                                closeKeyboard();
                                 finish();
                             }else{
                                 String errorMsg = response.getString("errorMsg");
@@ -551,10 +581,17 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if(!(networkInfo != null && networkInfo.isConnected())){
-            Toast.makeText(getBaseContext(), "Your device is not connected to Internet, please check network.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Your device is not connected to Internet, please check network connectivity.", Toast.LENGTH_LONG).show();
             return false;
         }else{
             return true;
+        }
+    }
+    private void closeKeyboard(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }
