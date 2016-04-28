@@ -85,7 +85,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         setContentView(R.layout.activity_act_new);
         Toolbar toolbar = (Toolbar) findViewById(R.id.act_new_toolbar);
         toolbar.setTitle(R.string.new_activity);
-        toolbar.setNavigationIcon(R.drawable.btn_back);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_back);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 

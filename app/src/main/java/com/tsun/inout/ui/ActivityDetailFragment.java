@@ -53,7 +53,7 @@ public class ActivityDetailFragment extends Fragment {
         toolbar.setBackgroundColor(0xff3eadeb);
         toolbar.setTitle(R.string.activity_details);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setNavigationIcon(R.drawable.btn_back);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 
             @Override
