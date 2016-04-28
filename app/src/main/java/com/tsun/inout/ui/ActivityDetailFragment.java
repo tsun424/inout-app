@@ -15,8 +15,6 @@ import android.widget.TextView;
 import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
 
-import java.util.ArrayList;
-
 /**
  *	browse details of an activity
  ************************************************************************
@@ -53,7 +51,7 @@ public class ActivityDetailFragment extends Fragment {
         toolbar.setBackgroundColor(0xff3eadeb);
         toolbar.setTitle(R.string.activity_details);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_back);
+        toolbar.setNavigationIcon(R.drawable.ic_navigate_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 
             @Override

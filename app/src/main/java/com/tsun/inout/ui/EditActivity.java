@@ -95,7 +95,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         setContentView(R.layout.activity_act_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.act_new_toolbar);
         toolbar.setTitle(R.string.edit_activity);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_back);
+        toolbar.setNavigationIcon(R.drawable.ic_navigate_back);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 

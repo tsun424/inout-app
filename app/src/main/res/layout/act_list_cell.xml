@@ -9,11 +9,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/act_duration"
+        android:textSize="15sp"
         android:minHeight="@dimen/min_list_item_height"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/act_type"
+        android:textSize="15sp"
         android:minHeight="@dimen/min_list_item_height"/>
 
 </LinearLayout>

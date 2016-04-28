@@ -14,5 +14,12 @@
     <dimen name="button_margin_top">5dp</dimen>
     <dimen name="linear_margin_bottom">5dp</dimen>
     <dimen name="scroll_margin">5dp</dimen>
+    <dimen name="heading_height">25dp</dimen>
+    <dimen name="min_content_height">30dp</dimen>
+    <dimen name="heading_left_padding">5dp</dimen>
+    <dimen name="content_left_padding">5dp</dimen>
+    <dimen name="heading_right_padding">0dp</dimen>
+    <dimen name="content_right_padding">0dp</dimen>
+    <dimen name="normal_text_size">16sp</dimen>
 
 </resources>
