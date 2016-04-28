@@ -70,7 +70,7 @@ public class ActivityAdapter extends BaseAdapter {
         if(data.getEndDateTime() == null || "null".equals(data.getEndDateTime())){
             endDateTime = "Unknown End Time";
         }
-        String actTime = data.getStartDateTime()+" to "+endDateTime;
+        String actTime = data.getStartDateTime()+" To "+endDateTime;
         actTimeTv.setText(actTime);
         actDescription.setText(data.getActivityType());
 

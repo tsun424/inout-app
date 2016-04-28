@@ -74,7 +74,8 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private ActivityBean activityBean;                  // new activity data
     private static final String TIME_FORMAT = "HH:mm:ss";
     private static final String DATE_FORMAT = "dd-MM-yyyy";
-
+    private static final String NZ_DATE_FORMAT = "dd/MM/yyyy";
+    private static final String NZ_DATE_TIME_FORMAT = "h:mm a dd/MM/yyyy";
     public static final int HORIZON_MIN_DISTANCE = 30;
     public static final String TAG = "jsRequest";
     public static final int HTTP_TIMEOUT_MS = 10000;
@@ -389,21 +390,21 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         GregorianCalendar calendar = new GregorianCalendar(year, month, day, hourOfDay, minute);
 
         SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT, Locale.UK);
-        timeSdf.setCalendar(calendar);
         SimpleDateFormat dateSdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
-        dateSdf.setCalendar(calendar);
         String selectedDate = dateSdf.format(calendar.getTime());
         String selectedTime = timeSdf.format(calendar.getTime());
+        SimpleDateFormat dateTimeSdf = new SimpleDateFormat(NZ_DATE_TIME_FORMAT, Locale.UK);
+        String selectedDateTime = dateTimeSdf.format(calendar.getTime());
         switch (view.getId()){
             case R.id.btn_start_time:
                 activityBean.setStartDate(selectedDate);
                 activityBean.setStartTime(selectedTime);
-                tvStartTime.setText(selectedDate+" "+selectedTime);
+                tvStartTime.setText(selectedDateTime);
                 break;
             case R.id.btn_end_time:
                 activityBean.setEndDate(selectedDate);
                 activityBean.setEndTime(selectedTime);
-                tvEndTime.setText(selectedDate+" "+selectedTime);
+                tvEndTime.setText(selectedDateTime);
                 break;
         }
     }
@@ -431,16 +432,17 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
         GregorianCalendar calendar = new GregorianCalendar(year, month, day);
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
-        sdf.setCalendar(calendar);
         String selectedDate = sdf.format(calendar.getTime());
+        SimpleDateFormat nzSdf = new SimpleDateFormat(NZ_DATE_FORMAT, Locale.UK);
+        String nzSelectedDate = nzSdf.format(calendar.getTime());
         switch (view.getId()){
             case R.id.btn_repeat_start_date:
                 activityBean.setRepeatStartDate(selectedDate);
-                tvRepeatStartDate.setText(selectedDate);
+                tvRepeatStartDate.setText(nzSelectedDate);
                 break;
             case R.id.btn_repeat_end_date:
                 activityBean.setRepeatEndDate(selectedDate);
-                tvRepeatEndDate.setText(selectedDate);
+                tvRepeatEndDate.setText(nzSelectedDate);
                 break;
         }
     }

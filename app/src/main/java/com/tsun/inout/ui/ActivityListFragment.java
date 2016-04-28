@@ -61,8 +61,8 @@ public class ActivityListFragment extends Fragment {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final String NZ_DATE_FORMAT = "dd-MM-yyyy";
-    private static final String NZ_DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    private static final String NZ_DATE_FORMAT = "dd/MM/yyyy";
+    private static final String NZ_DATE_TIME_FORMAT = "h:mm a dd/MM/yyyy";
     public static final String TAG = "jsRequest";
     public static final int HTTP_TIMEOUT_MS = 10000;
     public static final int PICK_EDIT_RESULT = 2;
