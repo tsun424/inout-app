@@ -17,9 +17,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +72,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private EditText etComments;
     private EditText etRepeatFrequency;
     private LinearLayout linearGroups;
+    private Switch swWorkingAlone;
 
     private ActivityBean activityBean;                  // new activity data
     private static final String TIME_FORMAT = "HH:mm:ss";
@@ -113,6 +116,8 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         etContact = (EditText)findViewById(R.id.et_contact);
         etComments = (EditText)findViewById(R.id.et_comments);
         etRepeatFrequency = (EditText)findViewById(R.id.et_repeat_frequency);
+        swWorkingAlone = (Switch)findViewById(R.id.sw_working_alone);
+        swWorkingAlone.setOnCheckedChangeListener(new SwitchChangeListener());
 
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
@@ -347,25 +352,23 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         spinner.setAdapter(adapter);
     }
 
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
+    class SwitchChangeListener implements CompoundButton.OnCheckedChangeListener{
 
-        // Check which checkbox was clicked
-        switch(view.getId()) {
-            case R.id.chb_working_alone:
-                if (checked)
-                    activityBean.setIsWorkingAlone(1);
-                else
-                    activityBean.setIsWorkingAlone(0);
-                break;
-            case R.id.chb_unknown_time:
-                if (checked){
-                    //set null to related fields
-                }
-                break;
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            switch(buttonView.getId()){
+                case R.id.sw_working_alone:
+                    if(isChecked){
+                        activityBean.setIsWorkingAlone(1);
+                    }else{
+                        activityBean.setIsWorkingAlone(0);
+                    }
+                    break;
+            }
         }
     }
+
 
     public void setTime(View v){
 

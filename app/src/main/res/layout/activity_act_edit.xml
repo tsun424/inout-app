@@ -29,7 +29,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:id="@+id/act_new_linear_layout"
+            android:id="@+id/act_edit_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="true"
@@ -40,7 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:layout_width="@dimen/form_label_width"
                     android:layout_height="wrap_content"
@@ -52,22 +53,38 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
-                <CheckBox android:id="@+id/chb_working_alone"
-                    android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
+                <Switch
+                    android:id="@+id/sw_working_alone"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:showText="true"
+                    android:textOff="@string/no"
+                    android:textOn="@string/yes"
+                    android:switchMinWidth="@dimen/switch_min_width"
                     android:text="@string/working_alone"
-                    android:onClick="onCheckboxClicked"/>
+                    />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:id="@+id/tv_start_time"
                     android:layout_width="0dp"
@@ -81,15 +98,21 @@
                     android:layout_height="wrap_content"
                     android:minHeight="@dimen/button_min_height"
                     android:minWidth="@dimen/button_min_width"
+                    android:layout_marginTop="@dimen/button_margin_top"
                     android:src="@drawable/ic_dialog_time"
                     android:background="@drawable/my_button"
                     android:onClick="setTime"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:id="@+id/tv_end_time"
                     android:layout_width="0dp"
@@ -108,56 +131,114 @@
                     android:background="@drawable/my_button"
                     android:onClick="setTime"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
-                <CheckBox android:id="@+id/chb_unknown_time"
-                    android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
+                <Switch
+                    android:id="@+id/sw_unknown_time"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:showText="true"
+                    android:textOff="@string/no"
+                    android:textOn="@string/yes"
+                    android:switchMinWidth="@dimen/switch_min_width"
                     android:text="@string/unknown_end_time"
-                    android:onClick="onCheckboxClicked"/>
+                    />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_text_view_height">
                 <EditText
                     android:id="@+id/et_contact"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/contact"
-                    android:layout_weight="2"/>
+                    android:layout_gravity="bottom"
+                    style="@style/EditText"
+                    android:hint="@string/contact" />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
-                <CheckBox android:id="@+id/chb_notify_selected"
-                    android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
+                <Switch
+                    android:id="@+id/sw_notify_selected"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:showText="true"
+                    android:textOff="@string/no"
+                    android:textOn="@string/yes"
+                    android:switchMinWidth="@dimen/switch_min_width"
                     android:text="@string/notify_selected"
-                    android:onClick="onCheckboxClicked"/>
+                    />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
-                <CheckBox android:id="@+id/chb_edit_repeat"
-                    android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_text_view_height">
+                <EditText
+                    android:id="@+id/et_comments"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/edit_repeat"
-                    android:onClick="onCheckboxClicked"/>
+                    android:layout_gravity="bottom"
+                    style="@style/EditText"
+                    android:hint="@string/comments" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
+
+                <Switch
+                    android:id="@+id/sw_edit_repeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:showText="true"
+                    android:textOff="@string/no"
+                    android:textOn="@string/yes"
+                    android:switchMinWidth="@dimen/switch_min_width"
+                    android:text="@string/edit_repeat"
+                    />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/linear_margin_bottom"
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:layout_width="@dimen/form_label_width"
                     android:layout_height="wrap_content"
@@ -174,11 +255,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:id="@+id/tv_repeat_start_date"
                     android:layout_width="0dp"
@@ -197,11 +283,16 @@
                     android:background="@drawable/my_button"
                     android:onClick="setDate"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:id="@+id/tv_repeat_end_date"
                     android:layout_width="0dp"
@@ -220,10 +311,15 @@
                     android:background="@drawable/my_button"
                     android:onClick="setDate"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:minHeight="@dimen/min_item_height">
                 <TextView
                     android:id="@+id/tv_groups"
                     android:layout_width="@dimen/form_label_width"
@@ -237,16 +333,11 @@
                     android:layout_weight="2"
                     android:orientation="vertical"/>
             </LinearLayout>
-            <LinearLayout
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <EditText
-                    android:id="@+id/et_comments"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/comments" />
-            </LinearLayout>
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+
         </LinearLayout>
     </ScrollView>
 

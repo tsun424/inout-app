@@ -17,9 +17,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,7 +77,8 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
     private EditText etComments;
     private EditText etRepeatFrequency;
     private LinearLayout linearGroups;
-    private CheckBox chbWorkingAlone;
+    private Switch swWorkingAlone;
+    private Switch swEditRepeat;
 
     private ActivityBean activityBean;                  // new activity data
     private String updRepeat;
@@ -128,9 +131,12 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         etContact = (EditText)findViewById(R.id.et_contact);
         etComments = (EditText)findViewById(R.id.et_comments);
         etRepeatFrequency = (EditText)findViewById(R.id.et_repeat_frequency);
-        chbWorkingAlone = (CheckBox)findViewById(R.id.chb_working_alone);
+        swWorkingAlone = (Switch)findViewById(R.id.sw_working_alone);
+        swWorkingAlone.setOnCheckedChangeListener(new SwitchChangeListener());
+        swEditRepeat = (Switch)findViewById(R.id.sw_edit_repeat);
+        swEditRepeat.setOnCheckedChangeListener(new SwitchChangeListener());
 
-        LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
+        LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_edit_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
         mDetector = new GestureDetectorCompat(this,new MyGestureListener());
         getSelectData();
@@ -139,7 +145,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
 
     private void renderPage(){
         if(activityBean.getIsWorkingAlone() == 1){
-            chbWorkingAlone.setChecked(true);
+            swWorkingAlone.setChecked(true);
         }
         SimpleDateFormat nzDateTimeSdf = new SimpleDateFormat(NZ_DATE_TIME_FORMAT);
         SimpleDateFormat dateSdf = new SimpleDateFormat(NZ_DATE_FORMAT);
@@ -410,30 +416,27 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         spinner.setSelection(selectedPosition);
     }
 
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
+    class SwitchChangeListener implements CompoundButton.OnCheckedChangeListener{
 
-        // Check which checkbox was clicked
-        switch(view.getId()) {
-            case R.id.chb_working_alone:
-                if (checked)
-                    activityBean.setIsWorkingAlone(1);
-                else
-                    activityBean.setIsWorkingAlone(0);
-                break;
-            case R.id.chb_unknown_time:
-                if (checked){
-                    //set null to related fields
-                }
-                break;
-            case R.id.chb_edit_repeat:
-                if (checked){
-                    updRepeat = "true";
-                }else{
-                    updRepeat = "false";
-                }
-                break;
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            switch(buttonView.getId()){
+                case R.id.sw_working_alone:
+                    if(isChecked){
+                        activityBean.setIsWorkingAlone(1);
+                    }else{
+                        activityBean.setIsWorkingAlone(0);
+                    }
+                    break;
+                case R.id.sw_edit_repeat:
+                    if(isChecked){
+                        updRepeat = "true";
+                    }else{
+                        updRepeat = "false";
+                    }
+                    break;
+            }
         }
     }
 
