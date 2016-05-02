@@ -181,9 +181,9 @@ public class ActivityListFragment extends Fragment {
         }
 
         // TODO change user id
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
+        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
-        // String apiUrl = "http://192.168.1.4/inout/public/index.php/activity/getMyOwnActivity/"+"1";
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/getMyOwnActivity/"+"1";
 
         jsArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
@@ -215,7 +215,7 @@ public class ActivityListFragment extends Fragment {
             return;
         }
 
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/checkIn/"+activityId;
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/checkIn/"+activityId;
 
         doJsonObjectRequest
                 (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
@@ -251,7 +251,7 @@ public class ActivityListFragment extends Fragment {
             return;
         }
 
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityId;
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/"+activityId;
 
         doJsonObjectRequest
                 (Request.Method.DELETE, apiUrl, null, new Response.Listener<JSONObject>() {
@@ -285,7 +285,7 @@ public class ActivityListFragment extends Fragment {
             return;
         }
 
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/delAll/"+activityId;
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/delAll/"+activityId;
 
         doJsonObjectRequest
                 (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
@@ -476,7 +476,7 @@ public class ActivityListFragment extends Fragment {
     }
 
     private void cacheData(){
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/lookup";
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/lookup";
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
 
         JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, apiUrl, null,
@@ -504,7 +504,7 @@ public class ActivityListFragment extends Fragment {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(jsObjectRequest);
 
-        String getGroupsUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
+        String getGroupsUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+"1";
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
 
         JsonArrayRequest jsArrayRequest = new JsonArrayRequest

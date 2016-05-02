@@ -247,7 +247,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
                 renderSpinner(repeatUnit, spRepeatUnit);
                 getGroups();
             }else{
-                String apiUrl = "http://benwk.azurewebsites.net/public/index.php/lookup";
+                String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/lookup";
                 // String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
 
                 doJsonObjectRequest
@@ -289,7 +289,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
                 renderGroups(jsonArray);
             }else{
                 // TODO change to real userId
-                String apiUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
+                String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+"1";
                 // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
 
                 JsonArrayRequest jsArrayRequest = new JsonArrayRequest

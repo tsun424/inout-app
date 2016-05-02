@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_activity_new"
-        android:icon="@drawable/ic_add_circle_outline"
+        android:icon="@drawable/ic_menu_add"
         android:orderInCategory="100"
         android:title="@string/new_activity"
         app:showAsAction="always" />

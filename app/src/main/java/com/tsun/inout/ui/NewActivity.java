@@ -198,7 +198,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                 renderSpinner(repeatUnit, spRepeatUnit);
                 getGroups();
             }else{
-                String apiUrl = "http://benwk.azurewebsites.net/public/index.php/lookup";
+                String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/lookup";
                 // String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
 
                 doJsonObjectRequest
@@ -242,7 +242,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                 renderGroups(jsonArray);
             }else{
                 // TODO change to real userId
-                String apiUrl = "http://benwk.azurewebsites.net/public/index.php/user/getGroups/"+"1";
+                String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+"1";
                 // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
 
                 JsonArrayRequest jsArrayRequest = new JsonArrayRequest
@@ -466,7 +466,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         ringProgressDialog.setCancelable(false);
         JSONObject activityJsonObject = activityBean.toJSONObject();
 
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity";
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity";
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity";
 
         doJsonObjectRequest
