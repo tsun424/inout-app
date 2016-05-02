@@ -22,7 +22,7 @@ import java.util.Calendar;
 public class DateToTimeFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
-    private View view;      // the view which call it, to recognise which view in the callback method onDateTimeSetListener.onDateTimeSet
+    private int viewId;      // the view which call it, to recognise which view in the callback method onDateTimeSetListener.onDateTimeSet
     private boolean mFirst = true;              // work around solution for solving the bug about timepicker open twice
 
     public DateToTimeFragment(){}
@@ -44,19 +44,19 @@ public class DateToTimeFragment extends DialogFragment
         if (mFirst) {
             mFirst = false;
             DateTimePickerFragment timePickerFragment = new DateTimePickerFragment();
-            timePickerFragment.showTime(getFragmentManager(), this.getTag(), this.view, year, month, day);
+            timePickerFragment.showTime(getFragmentManager(), this.getTag(), this.viewId, year, month, day);
         }
     }
 
     /**
      * this method must be called after the object is instantiated
      *
-     * @param view the view which call it, to recognise which view in the callback method
+     * @param viewId the view which call it, to recognise which view in the callback method
      *             onDateTimeSetListener.onDateTimeSet
      *
      * @return void
      */
-    public void setView(View view){
-        this.view = view;
+    public void setViewId(int viewId){
+        this.viewId = viewId;
     }
 }

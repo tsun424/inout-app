@@ -22,7 +22,7 @@ import java.util.Calendar;
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
-    private View view;      // the view which call it, to recognise which view in the callback method onDateTimeSetListener.onDateTimeSet
+    private int viewId;      // the view which call it, to recognise which view in the callback method onDateTimeSetListener.onDateTimeSet
     private onDateSelectedListener mCallback;
 
     public DatePickerFragment(){}
@@ -55,22 +55,22 @@ public class DatePickerFragment extends DialogFragment
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
-        mCallback.onDateSelected(this.view, year, month, day);
+        mCallback.onDateSelected(this.viewId, year, month, day);
     }
 
     /**
      * this method must be called after the object is instantiated
      *
-     * @param view the view which call it, to recognise which view in the callback method
+     * @param viewId the view which call it, to recognise which view in the callback method
      *             onDateTimeSetListener.onDateTimeSet
      *
      * @return void
      */
-    public void setView(View view){
-        this.view = view;
+    public void setViewId(int viewId){
+        this.viewId = viewId;
     }
 
     public interface onDateSelectedListener{
-        public void onDateSelected(View view, int year, int month, int day);
+        public void onDateSelected(int viewId, int year, int month, int day);
     }
 }

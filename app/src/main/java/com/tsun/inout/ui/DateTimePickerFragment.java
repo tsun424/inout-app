@@ -29,7 +29,7 @@ public class DateTimePickerFragment extends DialogFragment
     private int month;
     private int day;
     // the view which call it, to recognise which view in the callback method onDateTimeSetListener.onDateTimeSet
-    private View view;
+    private int viewId;
 
     private onDateTimeSetListener mCallback;
 
@@ -48,7 +48,7 @@ public class DateTimePickerFragment extends DialogFragment
     }
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        mCallback.onDateTimeSet(this.view, this.year, this.month, this.day, hourOfDay, minute);
+        mCallback.onDateTimeSet(this.viewId, this.year, this.month, this.day, hourOfDay, minute);
     }
 
     @Override
@@ -65,16 +65,16 @@ public class DateTimePickerFragment extends DialogFragment
         }
     }
 
-    public void showTime(FragmentManager manager, String tag, View view, int year, int month, int day){
+    public void showTime(FragmentManager manager, String tag, int viewId, int year, int month, int day){
 
             this.year = year;
             this.month = month;
             this.day = day;
-            this.view = view;
+            this.viewId = viewId;
             this.show(manager, tag);
     }
 
     public interface onDateTimeSetListener{
-        public void onDateTimeSet(View view, int year, int month, int day, int hourOfDay, int minute);
+        public void onDateTimeSet(int viewId, int year, int month, int day, int hourOfDay, int minute);
     }
 }

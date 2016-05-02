@@ -69,9 +69,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:showText="true"
-                    android:textOff="@string/no"
-                    android:textOn="@string/yes"
                     android:switchMinWidth="@dimen/switch_min_width"
                     android:text="@string/working_alone"
                     />
@@ -89,8 +86,8 @@
                 <TextView
                     android:id="@+id/tv_start_time"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/hint_start_time"
                     android:layout_weight="2"/>
                 <ImageButton
@@ -117,8 +114,8 @@
                 <TextView
                     android:id="@+id/tv_end_time"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/hint_end_time"
                     android:layout_weight="2"/>
                 <ImageButton
@@ -147,9 +144,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:showText="true"
-                    android:textOff="@string/no"
-                    android:textOn="@string/yes"
                     android:switchMinWidth="@dimen/switch_min_width"
                     android:text="@string/unknown_end_time"
                     />
@@ -187,9 +181,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:showText="true"
-                    android:textOff="@string/no"
-                    android:textOn="@string/yes"
                     android:switchMinWidth="@dimen/switch_min_width"
                     android:text="@string/notify_selected"
                     />
@@ -276,8 +267,8 @@
                 <TextView
                     android:id="@+id/tv_repeat_start_date"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/hint_repeat_start_time"
                     android:layout_weight="2"/>
                 <ImageButton
@@ -304,8 +295,8 @@
                 <TextView
                     android:id="@+id/tv_repeat_end_date"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/hint_repeat_end_time"
                     android:layout_weight="2"/>
                 <ImageButton

@@ -110,9 +110,13 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         spRepeatUnit.setOnItemSelectedListener(spinnerSelect);
 
         tvStartTime = (TextView)findViewById(R.id.tv_start_time);
+        tvStartTime.setOnClickListener(new DateTimeOnClickListener());
         tvEndTime = (TextView)findViewById(R.id.tv_end_time);
+        tvEndTime.setOnClickListener(new DateTimeOnClickListener());
         tvRepeatStartDate = (TextView)findViewById(R.id.tv_repeat_start_date);
+        tvRepeatStartDate.setOnClickListener(new DateOnClickListener());
         tvRepeatEndDate = (TextView)findViewById(R.id.tv_repeat_end_date);
+        tvRepeatEndDate.setOnClickListener(new DateOnClickListener());
         etContact = (EditText)findViewById(R.id.et_contact);
         etComments = (EditText)findViewById(R.id.et_comments);
         etRepeatFrequency = (EditText)findViewById(R.id.et_repeat_frequency);
@@ -123,6 +127,49 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         actDetailsLayout.setOnTouchListener(this);
         mDetector = new GestureDetectorCompat(this,new MyGestureListener());
         getSelectData();
+    }
+
+
+    class DateTimeOnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            DateToTimeFragment dateTimeFragment = new DateToTimeFragment();
+            dateTimeFragment.setViewId(v.getId());
+            String tag = "";
+
+            switch (v.getId()){
+                case R.id.tv_start_time:
+                    tag = "startTimePicker";
+                    break;
+                case R.id.tv_end_time:
+                    tag = "endTimePicker";
+                    break;
+            }
+
+            dateTimeFragment.show(getSupportFragmentManager(), tag);
+        }
+    }
+
+    class DateOnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            DatePickerFragment datePickerFragment = new DatePickerFragment();
+            datePickerFragment.setViewId(v.getId());
+            String tag = "";
+
+            switch (v.getId()){
+                case R.id.tv_repeat_start_date:
+                    tag = "repeatStartPicker";
+                    break;
+                case R.id.tv_repeat_end_date:
+                    tag = "repeatEndPicker";
+                    break;
+            }
+
+            datePickerFragment.show(getSupportFragmentManager(), tag);
+        }
     }
 
     @Override
@@ -373,7 +420,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     public void setTime(View v){
 
         DateToTimeFragment dateTimeFragment = new DateToTimeFragment();
-        dateTimeFragment.setView(v);
+        dateTimeFragment.setViewId(v.getId());
         String tag = "";
 
         switch (v.getId()){
@@ -389,7 +436,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     }
 
     @Override
-    public void onDateTimeSet(View view, int year, int month, int day, int hourOfDay, int minute) {
+    public void onDateTimeSet(int viewId, int year, int month, int day, int hourOfDay, int minute) {
         GregorianCalendar calendar = new GregorianCalendar(year, month, day, hourOfDay, minute);
 
         SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT, Locale.UK);
@@ -398,13 +445,23 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         String selectedTime = timeSdf.format(calendar.getTime());
         SimpleDateFormat dateTimeSdf = new SimpleDateFormat(NZ_DATE_TIME_FORMAT, Locale.UK);
         String selectedDateTime = dateTimeSdf.format(calendar.getTime());
-        switch (view.getId()){
+        switch (viewId){
             case R.id.btn_start_time:
                 activityBean.setStartDate(selectedDate);
                 activityBean.setStartTime(selectedTime);
                 tvStartTime.setText(selectedDateTime);
                 break;
+            case R.id.tv_start_time:
+                activityBean.setStartDate(selectedDate);
+                activityBean.setStartTime(selectedTime);
+                tvStartTime.setText(selectedDateTime);
+                break;
             case R.id.btn_end_time:
+                activityBean.setEndDate(selectedDate);
+                activityBean.setEndTime(selectedTime);
+                tvEndTime.setText(selectedDateTime);
+                break;
+            case R.id.tv_end_time:
                 activityBean.setEndDate(selectedDate);
                 activityBean.setEndTime(selectedTime);
                 tvEndTime.setText(selectedDateTime);
@@ -415,7 +472,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     public void setDate(View v){
 
         DatePickerFragment datePickerFragment = new DatePickerFragment();
-        datePickerFragment.setView(v);
+        datePickerFragment.setViewId(v.getId());
         String tag = "";
 
         switch (v.getId()){
@@ -431,19 +488,27 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     }
 
     @Override
-    public void onDateSelected(View view, int year, int month, int day) {
+    public void onDateSelected(int viewId, int year, int month, int day) {
 
         GregorianCalendar calendar = new GregorianCalendar(year, month, day);
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.UK);
         String selectedDate = sdf.format(calendar.getTime());
         SimpleDateFormat nzSdf = new SimpleDateFormat(NZ_DATE_FORMAT, Locale.UK);
         String nzSelectedDate = nzSdf.format(calendar.getTime());
-        switch (view.getId()){
+        switch (viewId){
             case R.id.btn_repeat_start_date:
                 activityBean.setRepeatStartDate(selectedDate);
                 tvRepeatStartDate.setText(nzSelectedDate);
                 break;
             case R.id.btn_repeat_end_date:
+                activityBean.setRepeatEndDate(selectedDate);
+                tvRepeatEndDate.setText(nzSelectedDate);
+                break;
+            case R.id.tv_repeat_start_date:
+                activityBean.setRepeatStartDate(selectedDate);
+                tvRepeatStartDate.setText(nzSelectedDate);
+                break;
+            case R.id.tv_repeat_end_date:
                 activityBean.setRepeatEndDate(selectedDate);
                 tvRepeatEndDate.setText(nzSelectedDate);
                 break;
