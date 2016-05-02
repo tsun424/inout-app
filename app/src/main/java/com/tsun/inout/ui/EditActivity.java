@@ -152,7 +152,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
             swWorkingAlone.setChecked(true);
         }
         SimpleDateFormat nzDateTimeSdf = new SimpleDateFormat(NZ_DATE_TIME_FORMAT);
-        SimpleDateFormat dateSdf = new SimpleDateFormat(NZ_DATE_FORMAT);
+        SimpleDateFormat dateSdf = new SimpleDateFormat(DATE_FORMAT);
         SimpleDateFormat timeSdf = new SimpleDateFormat(TIME_FORMAT);
 
         String startDateTimeStr = activityBean.getStartDateTime();
@@ -608,7 +608,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
             ringProgressDialog.dismiss();
             e.printStackTrace();
         }
-        String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/"+activityBean.getId();
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/"+activityBean.getId();
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/"+activityBean.getId();
 
         doJsonObjectRequest

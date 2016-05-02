@@ -16,6 +16,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <!-- edit/new activity start-->
     <string name="type">Type</string>
     <string name="start_time">Start Time</string>
     <string name="end_time">End Time</string>
@@ -32,12 +33,14 @@
     <string name="hint_end_time">Please choose end time</string>
     <string name="hint_repeat_start_time">Please choose repeat start time</string>
     <string name="hint_repeat_end_time">Please choose repeat end time</string>
-    <string name="time_out">Time Out: </string>
-    <string name="time_in">Time In: </string>
-    <string name="status">Status: </string>
-    <string name="label_contact">Contact: </string>
-    <string name="is_working_alone">Working Alone: </string>
-    <string name="is_repeat">Is Repeat: </string>
+    <!-- edit/new activity end-->
+    <!-- activity detail start-->
+    <string name="time_out">Time Out</string>
+    <string name="time_in">Time In</string>
+    <string name="status">Status</string>
+    <string name="is_working_alone">Working Alone</string>
+    <string name="is_repeat">Is Repeat</string>
     <string name="edit_repeat">Would you like to update repeat information as well?</string>
-    <string name="label_comments">Comments: </string>
+    <string name="label_comments">Comments</string>
+    <!-- activity detail end-->
 </resources>

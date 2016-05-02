@@ -64,14 +64,15 @@ public class ActivityAdapter extends BaseAdapter {
         }
         ActivityBean data = (ActivityBean) getItem(position);
 
-        TextView actTimeTv = (TextView)ll.findViewById(R.id.act_duration);
+        TextView tvStartTime = (TextView)ll.findViewById(R.id.act_start_time);
+        TextView tvEndTime = (TextView)ll.findViewById(R.id.act_end_time);
         TextView actDescription = (TextView)ll.findViewById(R.id.act_type);
         String endDateTime = data.getEndDateTime();
         if(data.getEndDateTime() == null || "null".equals(data.getEndDateTime())){
             endDateTime = "Unknown End Time";
         }
-        String actTime = data.getStartDateTime()+" To "+endDateTime;
-        actTimeTv.setText(actTime);
+        tvStartTime.setText(data.getStartDateTime());
+        tvEndTime.setText("To "+endDateTime);
         actDescription.setText(data.getActivityType());
 
         return ll;

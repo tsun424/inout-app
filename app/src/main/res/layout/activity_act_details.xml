@@ -26,8 +26,6 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/scroll_margin"
-        android:layout_marginRight="@dimen/scroll_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <LinearLayout
         android:id="@+id/act_details_layout"
@@ -47,7 +45,8 @@
             android:paddingStart="@dimen/heading_left_padding"
             android:paddingRight="@dimen/heading_right_padding"
             android:paddingEnd="@dimen/heading_right_padding"
-            android:layout_height="@dimen/heading_height" />
+            android:layout_height="@dimen/heading_height"
+            android:textSize="@dimen/normal_heading_size"/>
         <TextView
             android:id="@+id/tv_time_out"
             android:layout_width="match_parent"
@@ -58,8 +57,11 @@
             android:paddingStart="@dimen/content_left_padding"
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
-            android:minHeight="@dimen/min_content_height"/>
-
+            android:minHeight="@dimen/min_content_height" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/time_in"
             android:background="@color/color_light_grey"
@@ -81,6 +83,10 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/type"
             android:background="@color/color_light_grey"
@@ -102,6 +108,10 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/is_working_alone"
             android:background="@color/color_light_grey"
@@ -123,6 +133,10 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/status"
             android:background="@color/color_light_grey"
@@ -144,8 +158,12 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
-            android:text="@string/label_contact"
+            android:text="@string/contact"
             android:background="@color/color_light_grey"
             android:gravity="center_vertical"
             android:layout_width="match_parent"
@@ -165,6 +183,10 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/groups"
             android:background="@color/color_light_grey"
@@ -186,6 +208,10 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/is_repeat"
             android:background="@color/color_light_grey"
@@ -207,6 +233,10 @@
             android:paddingRight="@dimen/content_right_padding"
             android:paddingEnd="@dimen/content_right_padding"
             android:minHeight="@dimen/min_content_height"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
         <TextView
             android:text="@string/label_comments"
             android:background="@color/color_light_grey"

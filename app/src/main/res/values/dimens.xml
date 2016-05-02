@@ -6,23 +6,29 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-
+    <!-- Activity list start-->
     <dimen name="min_list_item_height">30dp</dimen>
     <dimen name="form_label_width">100dp</dimen>
     <dimen name="button_min_width">40dp</dimen>
     <dimen name="button_min_height">40dp</dimen>
     <dimen name="button_margin_top">5dp</dimen>
+    <dimen name="normal_margin">5dp</dimen>
+    <dimen name="list_text_size">16sp</dimen>
+    <dimen name="list_large_text_size">18sp</dimen>
+    <!-- Activity list end-->
 
     <!-- Activity details start -->
     <dimen name="linear_margin_bottom">5dp</dimen>
     <dimen name="scroll_margin">5dp</dimen>
-    <dimen name="heading_height">25dp</dimen>
-    <dimen name="min_content_height">30dp</dimen>
+    <dimen name="heading_height">35dp</dimen>
+    <dimen name="min_content_height">45dp</dimen>
     <dimen name="heading_left_padding">5dp</dimen>
     <dimen name="content_left_padding">5dp</dimen>
     <dimen name="heading_right_padding">0dp</dimen>
     <dimen name="content_right_padding">0dp</dimen>
-    <dimen name="normal_text_size">16sp</dimen>
+    <dimen name="content_padding_bottom">5dp</dimen>
+    <dimen name="normal_heading_size">16sp</dimen>
+    <dimen name="normal_text_size">18sp</dimen>
     <!-- Activity details end -->
 
     <!-- New activity start -->
