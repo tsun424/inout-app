@@ -141,10 +141,14 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == PICK_NEW_RESULT){
             if(resultCode == RESULT_OK){
+                /*
                 activityListFragment = new ActivityListFragment();
                 android.support.v4.app.FragmentTransaction fragmentTransaction =
                         getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, activityListFragment).commit();
+                */
+                activityListFragment = (ActivityListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                activityListFragment.refreshPage();
             }
         }else if (requestCode == OPEN_DETAILS){
             activityListFragment = (ActivityListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
