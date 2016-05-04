@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity
     private long lastClickTime = 0;
 
     static final int PICK_NEW_RESULT = 1;
+    static final int OPEN_DETAILS = 2;
 
     private ActivityListFragment activityListFragment;
 
@@ -145,6 +146,9 @@ public class MainActivity extends AppCompatActivity
                         getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, activityListFragment).commit();
             }
+        }else if (requestCode == OPEN_DETAILS){
+            activityListFragment = (ActivityListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            activityListFragment.refreshPage();
         }
 
     }
@@ -153,6 +157,6 @@ public class MainActivity extends AppCompatActivity
     public void onActivitySelected(ActivityBean activityBean) {
         Intent intent = new Intent(getBaseContext(), BrowseActivityPager.class);
         intent.putExtra("activityBean", activityBean);
-        startActivity(intent);
+        startActivityForResult(intent, OPEN_DETAILS);
     }
 }

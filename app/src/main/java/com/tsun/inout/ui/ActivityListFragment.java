@@ -159,7 +159,7 @@ public class ActivityListFragment extends Fragment {
                 return true;
             case R.id.edit:
                 // do edit
-                doEdit(activityBean.getId(), info.position);
+                doEdit(info.position);
                 return true;
             case R.id.delete:
                 // delete the activity
@@ -314,7 +314,7 @@ public class ActivityListFragment extends Fragment {
                 }, 2);
     }
 
-    private void doEdit(String activityId, final int position){
+    private void doEdit(final int position){
 
         if(!checkConnectivity()){
             return;
@@ -532,5 +532,13 @@ public class ActivityListFragment extends Fragment {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the RequestQueue.
         queue.add(jsArrayRequest);
+    }
+
+    public void refreshPage(){
+        if(jsArrayRequest != null){
+            queue.add(jsArrayRequest);
+        }else{
+            getActivityList();
+        }
     }
 }

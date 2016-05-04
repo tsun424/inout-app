@@ -29,6 +29,8 @@ public class BrowseActivityPager extends FragmentActivity {
 
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
+    private ActivityBean activityBean;
+    ActivityDetailFragment activityDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,11 @@ public class BrowseActivityPager extends FragmentActivity {
                 }
             }
         });
+        activityBean = (ActivityBean)getIntent().getExtras().getParcelable("activityBean");
+        activityDetailFragment = new ActivityDetailFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("activityBean", activityBean);
+        activityDetailFragment.setArguments(bundle);
     }
 
     @Override
@@ -83,10 +90,6 @@ public class BrowseActivityPager extends FragmentActivity {
             if(position == 0){
                 return new TransparentFragment();
             }else if(position == 1){
-                ActivityDetailFragment activityDetailFragment = new ActivityDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("activityBean", getIntent().getExtras().getParcelable("activityBean"));
-                activityDetailFragment.setArguments(bundle);
                 return activityDetailFragment;
             }
             return null;

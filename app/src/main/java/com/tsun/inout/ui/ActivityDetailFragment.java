@@ -46,7 +46,6 @@ public class ActivityDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.activity_act_details, container, false);
-        AppBarLayout appBarLayout = (AppBarLayout)rootView.findViewById(R.id.act_details_bar);
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.act_details_toolbar);
         toolbar.setBackgroundColor(0xff3eadeb);
         toolbar.setTitle(R.string.activity_details);
