@@ -31,11 +31,15 @@ public class SpinnerSelected implements AdapterView.OnItemSelectedListener {
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
         Spinner spinner = (Spinner)parent;
-        String lookUpId = ((LookupBean)parent.getItemAtPosition(position)).getId();
+        LookupBean lookupBean = (LookupBean)parent.getItemAtPosition(position);
+        String lookUpId = lookupBean.getId();
+        String lookUpName = lookupBean.getName();
         if(spinner.getId() == R.id.sp_act_type){
             activityBean.setActivityTypeId(lookUpId);
+            activityBean.setActivityType(lookUpName);
         }else if(spinner.getId() == R.id.sp_repeat_unit){
             activityBean.setRepeatUnitId(lookUpId);
+            activityBean.setRepeatUnitName(lookUpName);
         }
 
     }
