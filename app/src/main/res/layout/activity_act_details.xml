@@ -45,8 +45,7 @@
             android:paddingStart="@dimen/heading_left_padding"
             android:paddingRight="@dimen/heading_right_padding"
             android:paddingEnd="@dimen/heading_right_padding"
-            android:layout_height="@dimen/heading_height"
-            android:textSize="@dimen/normal_heading_size"/>
+            android:layout_height="@dimen/heading_height"/>
         <TextView
             android:id="@+id/tv_time_out"
             android:layout_width="match_parent"
