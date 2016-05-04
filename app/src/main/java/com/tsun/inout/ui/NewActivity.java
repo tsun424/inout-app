@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -43,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -73,9 +75,11 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private EditText etRepeatFrequency;
     private LinearLayout linearGroups;
     private Switch swWorkingAlone;
+    private Switch swUnknownEndTime;
+    private ImageButton btnEndTime;
 
     private ActivityBean activityBean;                  // new activity data
-    private static final String TIME_FORMAT = "HH:mm:ss";
+    private static final String TIME_FORMAT = "HH:mm";
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String NZ_DATE_FORMAT = "dd/MM/yyyy";
     private static final String NZ_DATE_TIME_FORMAT = "h:mm a dd/MM/yyyy";
@@ -122,6 +126,8 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         etRepeatFrequency = (EditText)findViewById(R.id.et_repeat_frequency);
         swWorkingAlone = (Switch)findViewById(R.id.sw_working_alone);
         swWorkingAlone.setOnCheckedChangeListener(new SwitchChangeListener());
+        swUnknownEndTime = (Switch)findViewById(R.id.sw_unknown_time);
+        swUnknownEndTime.setOnCheckedChangeListener(new SwitchChangeListener());
 
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_new_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
@@ -129,6 +135,17 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         getSelectData();
     }
 
+    private void renderPage(){
+        Date currentDate = new Date();
+        SimpleDateFormat nzDateTimeFormat = new SimpleDateFormat(NZ_DATE_TIME_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+        String startDateTimeStr = nzDateTimeFormat.format(currentDate);
+        tvStartTime.setText(startDateTimeStr);
+        activityBean.setStartDateTime(startDateTimeStr);
+        activityBean.setStartDate(dateFormat.format(currentDate));
+        activityBean.setStartTime(timeFormat.format(currentDate));
+    }
 
     class DateTimeOnClickListener implements View.OnClickListener{
 
@@ -287,6 +304,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
             jsonArray = new JSONArray(sharedPref.getString("myGroups","[]"));
             if(jsonArray.length() > 0){
                 renderGroups(jsonArray);
+                renderPage();
             }else{
                 // TODO change to real userId
                 String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+"1";
@@ -298,6 +316,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                             @Override
                             public void onResponse(JSONArray response) {
                                 renderGroups(response);
+                                renderPage();
                             }
                         }, new Response.ErrorListener() {
 
@@ -410,6 +429,21 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                         activityBean.setIsWorkingAlone(1);
                     }else{
                         activityBean.setIsWorkingAlone(0);
+                    }
+                    break;
+                case R.id.sw_unknown_time:
+                    if(isChecked){
+                        activityBean.setEndDateTime(null);
+                        activityBean.setEndDate(null);
+                        activityBean.setEndTime(null);
+                        tvEndTime.setText("Unknown End Time");
+                        tvEndTime.setOnClickListener(null);
+                        btnEndTime = (ImageButton)findViewById(R.id.btn_end_time);
+                        btnEndTime.setEnabled(false);
+                    }else{
+                        tvEndTime.setText(R.string.hint_end_time);
+                        tvEndTime.setOnClickListener(new DateTimeOnClickListener());
+                        btnEndTime.setEnabled(true);
                     }
                     break;
             }

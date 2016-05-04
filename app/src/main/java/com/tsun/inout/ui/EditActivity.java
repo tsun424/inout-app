@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -79,12 +80,14 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
     private LinearLayout linearGroups;
     private Switch swWorkingAlone;
     private Switch swEditRepeat;
+    private Switch swUnknownTime;
+    private ImageButton btnEndTime;
 
     private ActivityBean activityBean;                  // new activity data
     private String updRepeat;
     private ArrayList<String> groupNameArrayList;
 
-    private static final String TIME_FORMAT = "HH:mm:ss";
+    private static final String TIME_FORMAT = "HH:mm";
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String NZ_DATE_TIME_FORMAT = "h:mm a dd/MM/yyyy";
     private static final String NZ_DATE_FORMAT = "dd/MM/yyyy";
@@ -139,6 +142,9 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         swWorkingAlone.setOnCheckedChangeListener(new SwitchChangeListener());
         swEditRepeat = (Switch)findViewById(R.id.sw_edit_repeat);
         swEditRepeat.setOnCheckedChangeListener(new SwitchChangeListener());
+        swUnknownTime = (Switch)findViewById(R.id.sw_unknown_time);
+        swUnknownTime.setOnCheckedChangeListener(new SwitchChangeListener());
+        btnEndTime = (ImageButton)findViewById(R.id.btn_end_time);
 
         LinearLayout actDetailsLayout = (LinearLayout)findViewById(R.id.act_edit_linear_layout);
         actDetailsLayout.setOnTouchListener(this);
@@ -161,11 +167,18 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         tvEndTime.setText(endDateTimeStr);
         try {
             Date startDateTime = nzDateTimeSdf.parse(startDateTimeStr);
-            Date endDateTime = nzDateTimeSdf.parse(endDateTimeStr);
+            if(!"".equals(endDateTimeStr) && endDateTimeStr != null){
+                Date endDateTime = nzDateTimeSdf.parse(endDateTimeStr);
+                activityBean.setEndDate(dateSdf.format(endDateTime));
+                activityBean.setEndTime(timeSdf.format(endDateTime));
+            }else{
+                tvEndTime.setText("Unknown End Time");
+                tvEndTime.setOnClickListener(null);
+                swUnknownTime.setChecked(true);
+                btnEndTime.setEnabled(false);
+            }
             activityBean.setStartDate(dateSdf.format(startDateTime));
-            activityBean.setEndDate(dateSdf.format(endDateTime));
             activityBean.setStartTime(timeSdf.format(startDateTime));
-            activityBean.setEndTime(timeSdf.format(endDateTime));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -480,6 +493,20 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
                         updRepeat = "true";
                     }else{
                         updRepeat = "false";
+                    }
+                    break;
+                case R.id.sw_unknown_time:
+                    if(isChecked){
+                        activityBean.setEndDateTime(null);
+                        activityBean.setEndDate(null);
+                        activityBean.setEndTime(null);
+                        tvEndTime.setText("Unknown End Time");
+                        tvEndTime.setOnClickListener(null);
+                        btnEndTime.setEnabled(false);
+                    }else{
+                        tvEndTime.setText(R.string.hint_end_time);
+                        tvEndTime.setOnClickListener(new DateTimeOnClickListener());
+                        btnEndTime.setEnabled(true);
                     }
                     break;
             }
