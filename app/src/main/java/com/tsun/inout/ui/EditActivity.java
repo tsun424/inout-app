@@ -62,7 +62,8 @@ import java.util.Locale;
 
 public class EditActivity extends AppCompatActivity implements View.OnTouchListener,
         DateTimePickerFragment.onDateTimeSetListener,
-        DatePickerFragment.onDateSelectedListener {
+        DatePickerFragment.onDateSelectedListener,
+        SpinnerSelected.OnWorkingAloneSelectedListener{
 
     private RequestQueue queue;
 
@@ -121,7 +122,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         }
 
         // get view components
-        SpinnerSelected spinnerSelect = new SpinnerSelected(activityBean);
+        SpinnerSelected spinnerSelect = new SpinnerSelected(activityBean, this);
         spType = (Spinner)findViewById(R.id.sp_act_type);
         spType.setOnItemSelectedListener(spinnerSelect);
         spRepeatUnit = (Spinner)findViewById(R.id.sp_repeat_unit);
@@ -690,6 +691,19 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         if (view != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    public void displayLayout(boolean display){
+        LinearLayout linearWorkingAlone = (LinearLayout)findViewById(R.id.linear_working_alone);
+        View vWorkingAlone = (View)findViewById(R.id.v_working_alone);
+        if(display){
+            linearWorkingAlone.setVisibility(View.VISIBLE);
+            vWorkingAlone.setVisibility(View.VISIBLE);
+        }else{
+            linearWorkingAlone.setVisibility(View.GONE);
+            vWorkingAlone.setVisibility(View.GONE);
+            swWorkingAlone.setChecked(false);
         }
     }
 }
