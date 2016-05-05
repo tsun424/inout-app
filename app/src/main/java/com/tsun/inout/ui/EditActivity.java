@@ -624,6 +624,7 @@ public class EditActivity extends AppCompatActivity implements View.OnTouchListe
         activityBean.setComments(etComments.getText().toString());
         if(!("".equals(etRepeatFrequency.getText().toString()))){
             activityBean.setRepeatFrequency(Integer.parseInt(etRepeatFrequency.getText().toString()));
+            activityBean.setIsRepeat(1);
         }
 
         ringProgressDialog = ProgressDialog.show(this, "Please wait ...", "Saving data ...", true);

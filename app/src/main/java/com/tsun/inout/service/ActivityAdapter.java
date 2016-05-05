@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -66,14 +67,31 @@ public class ActivityAdapter extends BaseAdapter {
 
         TextView tvStartTime = (TextView)ll.findViewById(R.id.act_start_time);
         TextView tvEndTime = (TextView)ll.findViewById(R.id.act_end_time);
-        TextView actDescription = (TextView)ll.findViewById(R.id.act_type);
+        TextView tvActivityType = (TextView)ll.findViewById(R.id.act_type);
+        ImageView ivStatus = (ImageView)ll.findViewById(R.id.iv_status);
+        ImageView ivRepeat = (ImageView)ll.findViewById(R.id.iv_is_repeat);
+
         String endDateTime = data.getEndDateTime();
         if(data.getEndDateTime() == null || "null".equals(data.getEndDateTime())){
             endDateTime = "Unknown End Time";
         }
         tvStartTime.setText(data.getStartDateTime() + " To ");
         tvEndTime.setText(endDateTime);
-        actDescription.setText(data.getActivityType());
+        tvActivityType.setText(data.getActivityType());
+        String status = data.getStatus();
+        if("Active".equals(status)){
+            ivStatus.setImageResource(R.drawable.ic_active);
+        }else if("Completed".equals(status)){
+            ivStatus.setImageResource(R.drawable.ic_done);
+        }else if("Overdue".equals(status)){
+            ivStatus.setImageResource(R.drawable.ic_alert);
+        }
+        if(data.getIsRepeat() == 1){
+            ivRepeat.setImageResource(R.drawable.ic_repeat);
+        }else{
+            ivRepeat.setImageDrawable(null);
+        }
+
 
         return ll;
     }
