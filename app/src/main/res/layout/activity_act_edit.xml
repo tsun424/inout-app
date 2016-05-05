@@ -208,6 +208,7 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
             <LinearLayout
+                android:id="@+id/linear_layout_groups"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -230,107 +231,111 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/linear_repeat"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal"
-                android:minHeight="@dimen/min_item_height">
-
-                <Switch
-                    android:id="@+id/sw_edit_repeat"
+                android:orientation="vertical">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:switchMinWidth="@dimen/switch_min_width"
-                    android:text="@string/edit_repeat"
-                    />
+                    android:layout_marginBottom="@dimen/linear_margin_bottom"
+                    android:orientation="horizontal"
+                    android:minHeight="@dimen/min_item_height">
+
+                    <Switch
+                        android:id="@+id/sw_edit_repeat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:switchMinWidth="@dimen/switch_min_width"
+                        android:text="@string/edit_repeat"
+                        />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/linear_margin_bottom"
+                    android:orientation="horizontal"
+                    android:minHeight="@dimen/min_item_height">
+                    <TextView
+                        android:layout_width="@dimen/form_label_width"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/repeat_frequency"/>
+                    <EditText
+                        android:id="@+id/et_repeat_frequency"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                    <Spinner
+                        android:id="@+id/sp_repeat_unit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"/>
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/linear_margin_bottom"
+                    android:orientation="horizontal"
+                    android:minHeight="@dimen/min_item_height">
+                    <TextView
+                        android:id="@+id/tv_repeat_start_date"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/hint_repeat_start_time"
+                        android:layout_weight="2"/>
+                    <ImageButton
+                        android:id="@+id/btn_repeat_start_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/button_margin_top"
+                        android:minHeight="@dimen/button_min_height"
+                        android:minWidth="@dimen/button_min_width"
+                        android:src="@drawable/ic_dialog_time"
+                        android:background="@drawable/my_button"
+                        android:onClick="setDate"/>
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/linear_margin_bottom"
+                    android:orientation="horizontal"
+                    android:minHeight="@dimen/min_item_height">
+                    <TextView
+                        android:id="@+id/tv_repeat_end_date"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/hint_repeat_end_time"
+                        android:layout_weight="2"/>
+                    <ImageButton
+                        android:id="@+id/btn_repeat_end_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/button_margin_top"
+                        android:minHeight="@dimen/button_min_height"
+                        android:minWidth="@dimen/button_min_width"
+                        android:src="@drawable/ic_dialog_time"
+                        android:background="@drawable/my_button"
+                        android:onClick="setDate"/>
+                </LinearLayout>
+
             </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal"
-                android:minHeight="@dimen/min_item_height">
-                <TextView
-                    android:layout_width="@dimen/form_label_width"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/repeat_frequency"/>
-                <EditText
-                    android:id="@+id/et_repeat_frequency"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-                <Spinner
-                    android:id="@+id/sp_repeat_unit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"/>
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal"
-                android:minHeight="@dimen/min_item_height">
-                <TextView
-                    android:id="@+id/tv_repeat_start_date"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/hint_repeat_start_time"
-                    android:layout_weight="2"/>
-                <ImageButton
-                    android:id="@+id/btn_repeat_start_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/button_margin_top"
-                    android:minHeight="@dimen/button_min_height"
-                    android:minWidth="@dimen/button_min_width"
-                    android:src="@drawable/ic_dialog_time"
-                    android:background="@drawable/my_button"
-                    android:onClick="setDate"/>
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/linear_margin_bottom"
-                android:orientation="horizontal"
-                android:minHeight="@dimen/min_item_height">
-                <TextView
-                    android:id="@+id/tv_repeat_end_date"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/hint_repeat_end_time"
-                    android:layout_weight="2"/>
-                <ImageButton
-                    android:id="@+id/btn_repeat_end_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/button_margin_top"
-                    android:minHeight="@dimen/button_min_height"
-                    android:minWidth="@dimen/button_min_width"
-                    android:src="@drawable/ic_dialog_time"
-                    android:background="@drawable/my_button"
-                    android:onClick="setDate"/>
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
+
         </LinearLayout>
     </ScrollView>
 
