@@ -622,14 +622,35 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     public void displayLayout(boolean display){
         LinearLayout linearWorkingAlone = (LinearLayout)findViewById(R.id.linear_working_alone);
         View vWorkingAlone = (View)findViewById(R.id.v_working_alone);
+        LinearLayout linearGroups = (LinearLayout)findViewById(R.id.linear_layout_groups);
+        View vGroups = (View)findViewById(R.id.v_working_alone);
         if(display){
             linearWorkingAlone.setVisibility(View.VISIBLE);
             vWorkingAlone.setVisibility(View.VISIBLE);
+            linearGroups.setVisibility(View.VISIBLE);
+            vGroups.setVisibility(View.VISIBLE);
         }else{
             linearWorkingAlone.setVisibility(View.GONE);
             vWorkingAlone.setVisibility(View.GONE);
+            linearGroups.setVisibility(View.GONE);
+            vGroups.setVisibility(View.GONE);
             swWorkingAlone.setChecked(false);
+            uncheckGroups();
         }
 
+    }
+
+    private void uncheckGroups(){
+        int childCount = linearGroups.getChildCount();
+        for (int i=0; i < childCount; i++){
+            View v = linearGroups.getChildAt(i);
+            if(v instanceof CheckBox){
+                ((CheckBox) v).setChecked(false);
+                int idx = activityBean.getSelectedGroups().indexOf(((CheckBox) v).getId());
+                if(idx > -1){
+                    activityBean.getSelectedGroups().remove(idx);
+                }
+            }
+        }
     }
 }
