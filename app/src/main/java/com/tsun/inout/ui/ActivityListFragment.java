@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,13 +32,22 @@ import com.android.volley.toolbox.Volley;
 import com.tsun.inout.R;
 import com.tsun.inout.service.ActivityAdapter;
 import com.tsun.inout.model.ActivityBean;
+import com.tsun.inout.util.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *	List all my current activities
@@ -181,25 +191,27 @@ public class ActivityListFragment extends Fragment {
         }
 
         // TODO change user id
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
+        // String apiUrl = "https://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
+        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
         String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/getMyOwnActivity/"+"1";
 
         jsArrayRequest = new JsonArrayRequest
-                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
+            (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
 
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        renderList(response);
-                        cacheData();
-                    }
-                }, new Response.ErrorListener() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    renderList(response);
+                    cacheData();
+                }
+            }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        handleError("Getting data error...");
-                    }
-                });
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                    handleError("Getting data error...");
+                }
+            });
         jsArrayRequest.setTag(TAG);
         jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
                 HTTP_TIMEOUT_MS,
@@ -207,6 +219,7 @@ public class ActivityListFragment extends Fragment {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the RequestQueue.
         queue.add(jsArrayRequest);
+
     }
 
     private void doCheckIn(String activityId, final int position){

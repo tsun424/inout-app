@@ -2,6 +2,8 @@
     <string name="app_name">InOut</string>
     <string name="preference_file_key">inout_shared_preference</string>
 
+    <string name="title_login_inout_app">InOut Login</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="my_activity">My Activity</string>

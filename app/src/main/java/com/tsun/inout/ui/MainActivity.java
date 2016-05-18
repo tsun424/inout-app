@@ -1,6 +1,8 @@
 package com.tsun.inout.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,10 +12,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.microsoft.aad.adal.AuthenticationCallback;
+import com.microsoft.aad.adal.AuthenticationConstants;
+import com.microsoft.aad.adal.AuthenticationContext;
+import com.microsoft.aad.adal.AuthenticationResult;
 import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
+import com.tsun.inout.util.Constants;
+import com.tsun.inout.util.PublicUtil;
+
+import static android.widget.Toast.LENGTH_LONG;
+import static android.widget.Toast.LENGTH_SHORT;
+
 
 /**
  *	Main Activity
@@ -31,8 +46,17 @@ public class MainActivity extends AppCompatActivity
 
     static final int PICK_NEW_RESULT = 1;
     static final int OPEN_DETAILS = 2;
+    /**
+     * Extra query parameter nux=1 uses new login page at AAD. This is optional.
+     */
+    static final String EXTRA_QUERY_PARAM = "nux=1";
 
     private ActivityListFragment activityListFragment;
+    private AuthenticationContext mAuthContext;
+    private ProgressDialog mLoginProgressDialog;
+
+    private TextView tvLoginName;
+
 
 
     @Override
@@ -51,12 +75,45 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Set the fragment initially
-        ActivityListFragment fragment = new ActivityListFragment();
-        android.support.v4.app.FragmentTransaction fragmentTransaction =
-                getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        View headerLayout = navigationView.getHeaderView(0);
+        tvLoginName = (TextView)headerLayout.findViewById(R.id.tv_login_user);
+
+        // do authentication start
+        // Provide key info for Encryption
+        if (Build.VERSION.SDK_INT < 18) {
+            try {
+                PublicUtil.setupKeyForSample();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Encryption failed:"+e, LENGTH_LONG).show();
+            }
+        }
+        mAuthContext = new AuthenticationContext(MainActivity.this, Constants.AUTHORITY_URL, true);
+        // mLoginProgressDialog.show();
+        mAuthContext.acquireToken(MainActivity.this, Constants.RESOURCE_ID, Constants.CLIENT_ID,
+                Constants.REDIRECT_URL, "", EXTRA_QUERY_PARAM, getCallback());
+        // do authentication end
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // To test session cookie behavior
+        mLoginProgressDialog = new ProgressDialog(this);
+        mLoginProgressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mLoginProgressDialog.setMessage("Login in progress...");
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mLoginProgressDialog != null) {
+            // to test session cookie behavior
+            mLoginProgressDialog.dismiss();
+            mLoginProgressDialog = null;
+        }
     }
 
     @Override
@@ -139,7 +196,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_NEW_RESULT){
+
+        if (requestCode == AuthenticationConstants.UIRequest.BROWSER_FLOW) {
+            if (mAuthContext != null) {
+                mAuthContext.onActivityResult(requestCode, resultCode, data);
+            }
+        }else if(requestCode == PICK_NEW_RESULT){
             if(resultCode == RESULT_OK){
                 /*
                 activityListFragment = new ActivityListFragment();
@@ -163,4 +225,58 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("activityBean", activityBean);
         startActivityForResult(intent, OPEN_DETAILS);
     }
+
+    // authentication start
+    private AuthenticationCallback<AuthenticationResult> getCallback() {
+        return new AuthenticationCallback<AuthenticationResult>() {
+
+            @Override
+            public void onError(Exception exc) {
+                if (mLoginProgressDialog != null && mLoginProgressDialog.isShowing()) {
+                    mLoginProgressDialog.dismiss();
+                }
+
+                Toast.makeText(getApplicationContext(), "Login error, get token error:" + exc.getMessage(),
+                        LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(AuthenticationResult result) {
+                if (mLoginProgressDialog != null && mLoginProgressDialog.isShowing()) {
+                    mLoginProgressDialog.dismiss();
+                }
+                if (result != null && !result.getAccessToken().isEmpty()) {
+                    // System.out.println("Token info:" + result.getAccessToken());
+                    // System.out.println("IDToken info:" + result.getIdToken());
+                    setLocalToken(result);
+                    ActivityListFragment fragment = new ActivityListFragment();
+                    android.support.v4.app.FragmentTransaction fragmentTransaction =
+                            getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_container, fragment);
+                    fragmentTransaction.commit();
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: didn't get AuthenticationResult from Azure AD",
+                            LENGTH_LONG).show();
+                }
+
+                if (result.getUserInfo() != null) {
+                    // System.out.println("User info userid:" + result.getUserInfo().getUserId()
+                    //       + " displayableId:" + result.getUserInfo().getDisplayableId());
+                    System.out.println();
+                    // TODO render user information
+                    tvLoginName.setText(result.getUserInfo().getGivenName());
+                }
+            }
+
+        };
+    }
+
+    private void setLocalToken(AuthenticationResult newToken) {
+        Constants.CURRENT_RESULT = newToken;
+    }
+
+
+    // authentication end
+
 }
