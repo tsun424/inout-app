@@ -1,7 +1,6 @@
 package com.tsun.inout.ui;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,6 +28,8 @@ import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
 import com.tsun.inout.model.LookupBean;
 import com.tsun.inout.service.SpinnerSelected;
+import com.tsun.inout.util.Constants;
+import com.tsun.inout.util.PublicUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +37,9 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  *	super activity of NewActivity and EditActivity, which can reduce
@@ -292,7 +296,21 @@ public class EditableActActivity extends AppCompatActivity implements
      */
     protected void doJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> response, Response.ErrorListener errorListener){
 
-        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(method, url, jsonRequest, response, errorListener);
+        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(method, url, jsonRequest, response, errorListener){//here before semicolon ; and use { }.
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // return super.getHeaders();
+                HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+
+                header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                return header;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return super.getBodyContentType();
+            }
+        };
         jsObjectRequest.setTag(TAG);
         jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 HTTP_TIMEOUT_MS,
@@ -321,11 +339,9 @@ public class EditableActActivity extends AppCompatActivity implements
 
     protected void getSelectData(){
 
-        SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         JSONObject jsonObject;
         try {
-            jsonObject = new JSONObject(sharedPref.getString("selectData","{}"));
+            jsonObject = new JSONObject(PublicUtil.getStringFromSP(this,"selectData","{}"));
             if(jsonObject.length() > 0){
                 JSONArray activityType = (JSONArray)jsonObject.getJSONArray("activityType");
                 renderSpinner(activityType, spType);
@@ -365,18 +381,16 @@ public class EditableActActivity extends AppCompatActivity implements
     }
 
     protected void getGroups(){
-        SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(sharedPref.getString("myGroups","[]"));
+            jsonArray = new JSONArray(PublicUtil.getStringFromSP(this, "myGroups","[]"));
             if(jsonArray.length() > 0){
                 renderGroups(jsonArray);
                 renderPage();
             }else{
                 // TODO change to real userId
-                String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+"1";
-                // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
+                String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+PublicUtil.getStringFromSP(this, "userId", "");
+                // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+1;
 
                 JsonArrayRequest jsArrayRequest = new JsonArrayRequest
                         (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
@@ -392,7 +406,21 @@ public class EditableActActivity extends AppCompatActivity implements
                             public void onErrorResponse(VolleyError error) {
                                 handleError("Getting data error...");
                             }
-                        });
+                        }){//here before semicolon ; and use { }.
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        // return super.getHeaders();
+                        HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+
+                        header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                        return header;
+                    }
+
+                    @Override
+                    public String getBodyContentType() {
+                        return super.getBodyContentType();
+                    }
+                };
                 jsArrayRequest.setTag(TAG);
                 jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
                         HTTP_TIMEOUT_MS,

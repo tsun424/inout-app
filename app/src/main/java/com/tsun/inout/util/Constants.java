@@ -19,17 +19,17 @@ public class Constants {
     // PARAMETERS----------------------------------
     // https://login.windows.net/tenantInfo
     // https://login.windows.net/<tenantID>
-    public static String AUTHORITY_URL = "https://login.windows.net/c6c0f5f5-fff4-4667-ad16-ff34d43073a8";
+    public static final String AUTHORITY_URL = "https://login.windows.net/c6c0f5f5-fff4-4667-ad16-ff34d43073a8";
 
     // Clientid is given from AAD page when you register your Android app
-    public static String CLIENT_ID = "5d616890-ed6b-4706-a526-d619c8d22791";
+    public static final String CLIENT_ID = "5d616890-ed6b-4706-a526-d619c8d22791";
 
     // URI for the resource. You need to setup this resource(WEB API) at AAD. APP ID URI configured in AAD App
-    public static String RESOURCE_ID = "https://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php";
+    public static final String RESOURCE_ID = "https://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php";
 
     // RedirectUri is where the token is redirected to in web flows. In native clients, this isn't used yet.
     // but it must be configured, otherwise, sign in error
-    public static String REDIRECT_URL = "https://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php";
+    public static final String REDIRECT_URL = "https://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php";
 
     // Endpoint we are targeting for the deployed WebAPI service
     public static String SERVICE_URL = "https://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php";

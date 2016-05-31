@@ -17,6 +17,14 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.microsoft.aad.adal.AuthenticationCallback;
 import com.microsoft.aad.adal.AuthenticationConstants;
 import com.microsoft.aad.adal.AuthenticationContext;
@@ -25,6 +33,12 @@ import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
 import com.tsun.inout.util.Constants;
 import com.tsun.inout.util.PublicUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
@@ -43,9 +57,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityListFragment.OnActivityListSelectedListener {
 
     private long lastClickTime = 0;
+    private RequestQueue queue;
 
     static final int PICK_NEW_RESULT = 1;
     static final int OPEN_DETAILS = 2;
+    public static final String TAG = "jsRequest";
+    public static final int HTTP_TIMEOUT_MS = 10000;
     /**
      * Extra query parameter nux=1 uses new login page at AAD. This is optional.
      */
@@ -56,7 +73,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog mLoginProgressDialog;
 
     private TextView tvLoginName;
-
+    private TextView tvLoginEmail;
 
 
     @Override
@@ -77,6 +94,7 @@ public class MainActivity extends AppCompatActivity
 
         View headerLayout = navigationView.getHeaderView(0);
         tvLoginName = (TextView)headerLayout.findViewById(R.id.tv_login_user);
+        tvLoginEmail = (TextView)headerLayout.findViewById(R.id.tv_login_email);
 
         // do authentication start
         // Provide key info for Encryption
@@ -94,6 +112,7 @@ public class MainActivity extends AppCompatActivity
                 Constants.REDIRECT_URL, "", EXTRA_QUERY_PARAM, getCallback());
         // do authentication end
 
+        queue = Volley.newRequestQueue(this);
     }
 
     @Override
@@ -191,6 +210,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+        // cancel current network requests
+        if (queue != null) {
+            queue.cancelAll(TAG);
+        }
     }
 
     @Override
@@ -237,7 +260,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 Toast.makeText(getApplicationContext(), "Login error, get token error:" + exc.getMessage(),
-                        LENGTH_SHORT).show();
+                        LENGTH_LONG).show();
             }
 
             @Override
@@ -246,27 +269,22 @@ public class MainActivity extends AppCompatActivity
                     mLoginProgressDialog.dismiss();
                 }
                 if (result != null && !result.getAccessToken().isEmpty()) {
-                    // System.out.println("Token info:" + result.getAccessToken());
-                    // System.out.println("IDToken info:" + result.getIdToken());
                     setLocalToken(result);
                     ActivityListFragment fragment = new ActivityListFragment();
                     android.support.v4.app.FragmentTransaction fragmentTransaction =
                             getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.fragment_container, fragment);
                     fragmentTransaction.commit();
-
+                    if (result.getUserInfo() != null) {
+                        tvLoginName.setText(result.getUserInfo().getGivenName());
+                        tvLoginEmail.setText(result.getUserInfo().getDisplayableId());
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "Error: didn't get AuthenticationResult from Azure AD",
                             LENGTH_LONG).show();
                 }
 
-                if (result.getUserInfo() != null) {
-                    // System.out.println("User info userid:" + result.getUserInfo().getUserId()
-                    //       + " displayableId:" + result.getUserInfo().getDisplayableId());
-                    System.out.println();
-                    // TODO render user information
-                    tvLoginName.setText(result.getUserInfo().getGivenName());
-                }
+
             }
 
         };
@@ -274,9 +292,62 @@ public class MainActivity extends AppCompatActivity
 
     private void setLocalToken(AuthenticationResult newToken) {
         Constants.CURRENT_RESULT = newToken;
+        PublicUtil.putStringToSP(this,"accessToken",newToken.getAccessToken());
+        // handle get user id and store it into SharedPreferences
+        String getUserUri = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/checkUser/"+Constants.CURRENT_RESULT.getUserInfo().getUserId()
+                +"/"+Constants.CURRENT_RESULT.getUserInfo().getDisplayableId();
+
+        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, getUserUri, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String currentUserId = Long.toString(response.getLong("id"));
+
+                            PublicUtil.putStringToSP(MainActivity.this, "userId", currentUserId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                handleError(error.toString());
+            }
+        }){//here before semicolon ; and use { }.
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // return super.getHeaders();
+                HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+
+                header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                return header;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return super.getBodyContentType();
+            }
+        };
+        jsObjectRequest.setTag(TAG);
+        jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                HTTP_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(jsObjectRequest);
     }
 
 
     // authentication end
+    private void handleError(String errInfo){
+        if(errInfo == null || errInfo.equals("")){
+            errInfo = "Something wrong...";
+        }
+        Toast.makeText(this,
+                errInfo, Toast.LENGTH_LONG).show();
+    }
 
 }

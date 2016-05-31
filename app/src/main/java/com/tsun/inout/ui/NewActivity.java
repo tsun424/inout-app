@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
 import com.tsun.inout.model.LookupBean;
+import com.tsun.inout.util.PublicUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -267,6 +268,8 @@ public class NewActivity extends EditableActActivity implements View.OnTouchList
             return;
         }
 
+        String userId = PublicUtil.getStringFromSP(this, "userId","");
+        activityBean.setUserId(userId);
         activityBean.setContact(etContact.getText().toString());
         activityBean.setComments(etComments.getText().toString());
         if(!("".equals(etRepeatFrequency.getText().toString()))){
@@ -274,11 +277,11 @@ public class NewActivity extends EditableActActivity implements View.OnTouchList
         }
 
         ringProgressDialog = ProgressDialog.show(this, "Please wait ...", "Saving data ...", true);
-        ringProgressDialog.setCancelable(false);
+        ringProgressDialog.setCancelable(true);
         JSONObject activityJsonObject = activityBean.toJSONObject();
 
         String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity";
-        // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity";
+        //String apiUrl = "http://10.0.2.2/inout/public/index.php/activity";
 
         doJsonObjectRequest
                 (Request.Method.POST, apiUrl, activityJsonObject, new Response.Listener<JSONObject>() {

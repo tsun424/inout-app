@@ -3,6 +3,8 @@ package com.tsun.inout.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.tsun.inout.util.Constants;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -348,6 +350,8 @@ public class ActivityBean implements Parcelable{
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("loginId", this.getUserId());
+            jsonObject.put("userId", this.getUserId());
             jsonObject.put("startDate", this.getStartDate());
             jsonObject.put("startTime", this.getStartTime());
 

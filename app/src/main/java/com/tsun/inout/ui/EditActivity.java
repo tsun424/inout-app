@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.tsun.inout.R;
 import com.tsun.inout.model.ActivityBean;
 import com.tsun.inout.model.LookupBean;
+import com.tsun.inout.util.PublicUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -336,7 +337,8 @@ public class EditActivity extends EditableActActivity implements View.OnTouchLis
         if(!checkConnectivity()){
             return;
         }
-
+        String userId = PublicUtil.getStringFromSP(this, "userId","");
+        activityBean.setUserId(userId);
         activityBean.setContact(etContact.getText().toString());
         activityBean.setComments(etComments.getText().toString());
         if(!("".equals(etRepeatFrequency.getText().toString()))){
@@ -345,7 +347,7 @@ public class EditActivity extends EditableActActivity implements View.OnTouchLis
         }
 
         ringProgressDialog = ProgressDialog.show(this, "Please wait ...", "Saving data ...", true);
-        ringProgressDialog.setCancelable(false);
+        ringProgressDialog.setCancelable(true);
         JSONObject activityJsonObject = activityBean.toJSONObject();
         try {
             activityJsonObject.put("updRepeat", updRepeat);

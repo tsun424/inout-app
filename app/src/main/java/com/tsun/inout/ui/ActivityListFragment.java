@@ -33,17 +33,12 @@ import com.tsun.inout.R;
 import com.tsun.inout.service.ActivityAdapter;
 import com.tsun.inout.model.ActivityBean;
 import com.tsun.inout.util.Constants;
+import com.tsun.inout.util.PublicUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -118,7 +113,6 @@ public class ActivityListFragment extends Fragment {
                 }
             }
         });
-
         return rootView;
     }
 
@@ -192,9 +186,8 @@ public class ActivityListFragment extends Fragment {
 
         // TODO change user id
         // String apiUrl = "https://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
-        // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/getMyOwnActivity/"+"1";
-        // String apiUrl = "http://benwk.azurewebsites.net/public/index.php/activity/getMyOwnActivity/"+"1";
-        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/getMyOwnActivity/"+"1";
+        // String apiUrl = "http://10.0.2.2/inout/public/index.php/activity/get/"+ PublicUtil.getStringFromSP(this.getContext(),"userId","1");
+        String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/activity/get/"+ PublicUtil.getStringFromSP(this.getContext(),"userId","1");
 
         jsArrayRequest = new JsonArrayRequest
             (Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
@@ -209,9 +202,23 @@ public class ActivityListFragment extends Fragment {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
-                    handleError("Getting data error...");
+                    handleError("Getting user activity data error...");
                 }
-            });
+            }){//here before semicolon ; and use { }.
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    // return super.getHeaders();
+                    HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+                    System.out.println("token===>"+Constants.CURRENT_RESULT.getAccessToken());
+                    header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                    return header;
+                }
+
+                @Override
+                public String getBodyContentType() {
+                    return super.getBodyContentType();
+                }
+            };
         jsArrayRequest.setTag(TAG);
         jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
                 HTTP_TIMEOUT_MS,
@@ -380,7 +387,21 @@ public class ActivityListFragment extends Fragment {
         ringProgressDialog = ProgressDialog.show(getActivity(), "Please wait ...", dialogMsg, true);
         ringProgressDialog.setCancelable(false);
 
-        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(method, url, jsonRequest, response, errorListener);
+        JsonObjectRequest jsObjectRequest = new JsonObjectRequest(method, url, jsonRequest, response, errorListener){//here before semicolon ; and use { }.
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // return super.getHeaders();
+                HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+
+                header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                return header;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return super.getBodyContentType();
+            }
+        };
         jsObjectRequest.setTag(TAG);
         jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 HTTP_TIMEOUT_MS,
@@ -489,27 +510,42 @@ public class ActivityListFragment extends Fragment {
     }
 
     private void cacheData(){
+
         String apiUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/lookup";
         // String apiUrl = "http://10.0.2.2/inout/public/index.php/lookup";
 
         JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, apiUrl, null,
-            new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONObject>() {
 
-                @Override
-                public void onResponse(JSONObject response) {
-                    SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                            getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString("selectData", response.toString());
-                    editor.commit();
-                }
-            }, new Response.ErrorListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("selectData", response.toString());
+                        editor.apply();
+                    }
+                }, new Response.ErrorListener() {
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    handleError(error.toString());
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError("Getting select data error...");
                 }
-            });
+        }){//here before semicolon ; and use { }.
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // return super.getHeaders();
+                HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+
+                header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                return header;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return super.getBodyContentType();
+            }
+        };
         jsObjectRequest.setTag(TAG);
         jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 HTTP_TIMEOUT_MS,
@@ -517,27 +553,37 @@ public class ActivityListFragment extends Fragment {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(jsObjectRequest);
 
-        String getGroupsUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+"1";
-        // String apiUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+"1";
-
+        // handle group info
+        String getGroupsUrl = "http://ec2-54-149-243-26.us-west-2.compute.amazonaws.com/inout/public/index.php/user/getGroups/"+PublicUtil.getStringFromSP(this.getActivity(), "userId","");
+        // String getGroupsUrl = "http://10.0.2.2/inout/public/index.php/user/getGroups/"+1;
         JsonArrayRequest jsArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, getGroupsUrl, null, new Response.Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray response) {
-                        SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString("myGroups", response.toString());
-                        editor.commit();
+                        PublicUtil.putStringToSP(ActivityListFragment.this.getActivity(),"myGroups", response.toString());
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        handleError("Getting data error...");
+                        handleError("Getting group data error...");
                     }
-                });
+                }){//here before semicolon ; and use { }.
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // return super.getHeaders();
+                HashMap<String, String> header = new HashMap<String, String>(super.getHeaders());
+
+                header.put(Constants.HEADER_AUTHORIZATION, Constants.HEADER_AUTHORIZATION_VALUE_PREFIX + Constants.CURRENT_RESULT.getAccessToken());
+                return header;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return super.getBodyContentType();
+            }
+        };
         jsArrayRequest.setTag(TAG);
         jsArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
                 HTTP_TIMEOUT_MS,
@@ -545,6 +591,7 @@ public class ActivityListFragment extends Fragment {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the RequestQueue.
         queue.add(jsArrayRequest);
+
     }
 
     public void refreshPage(){
